@@ -30,7 +30,8 @@ module.exports = {
     // usage with Prettier, provided by 'eslint-config-prettier'.
     'plugin:prettier/recommended',
     // "prettier",
-
+    'plugin:vue/recommended',
+    'eslint:recommended',
     // "prettier/vue"
   ],
 
