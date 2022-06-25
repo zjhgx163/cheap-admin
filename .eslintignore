@@ -1,0 +1,9 @@
+/dist
+/src-bex/www
+/src-capacitor
+/src-cordova
+/node_modules
+build/*.js
+src/assets
+public
+
