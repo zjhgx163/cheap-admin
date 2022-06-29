@@ -5,7 +5,7 @@
         <div class="block">
           日期选择：
           <el-date-picker
-            v-model="date"
+            v-model="listQuery.dateRange"
             :placeholder="$t('order.datePlaceholder')"
             type="daterange"
             range-separator="至"
@@ -18,7 +18,7 @@
       <el-col :span="5" :xs="24">
         <div class="block">
           订单状态：
-          <el-select v-model="orderStatus" placeholder="请选择">
+          <el-select v-model="listQuery.orderStatus" placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -26,6 +26,11 @@
               :value="item.value"
             />
           </el-select>
+        </div>
+      </el-col>
+      <el-col :span="3" :xs="24">
+        <div class="block">
+          <el-button type="primary" @click.prevent.stop="getList">查询</el-button>
         </div>
       </el-col>
     </el-row>
@@ -38,24 +43,129 @@
       highlight-current-row
       style="width: 100%"
     >
-      <el-table-column align="center" label="ID" width="80">
+      <el-table-column align="center" label="邀请码" width="75">
         <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
+          <span>{{ scope.row.inviteCode }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="Date">
+      <el-table-column align="center" label="平台订单号" width="170">
         <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ scope.row.platformOrderNo }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="Author">
+      <el-table-column align="center" label="平台" width="60">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.platform | parsePlatform }}</span>
         </template>
       </el-table-column>
 
+      <el-table-column width="140px" align="center" label="下单时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.orderTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="140px" align="center" label="支付时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.payTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="140px" align="center" label="完成时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.finishTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="商品标题" width="220">
+        <template slot-scope="scope">
+          <span>{{ scope.row.itemTitle }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="商品图片" width="100">
+        <template slot-scope="scope">
+          <img :src="scope.row.itemImg" style="width: 80px; height: 80px" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="预估计佣金额" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.estimateCosAmount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="实际计佣金额" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.actualCosAmount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="预估佣金" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.estimateCommissionAmount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="实际佣金" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.actualCommissionAmount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="最终佣金" width="90">
+        <template slot-scope="scope">
+          <el-input v-model="scope.row.finalCommissionAmount"></el-input>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="平台佣金率" width="70">
+        <template slot-scope="scope">
+          <span>%{{ scope.row.commissionRate }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="分成比例" width="70">
+        <template slot-scope="scope">
+          <span>%{{ scope.row.shareRate }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="用户实际佣金" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.userActualCommissionAmount }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="用户最终佣金" width="90">
+        <template slot-scope="scope">
+          <el-input v-model="scope.row.userFinalCommissionAmount"></el-input>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="数量" width="40">
+        <template slot-scope="scope">
+          <span>{{ scope.row.itemQuantity }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="单价" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.itemPrice }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="操作" width="120">
+        <template slot-scope="scope">
+          <el-select v-model="scope.row.approveOption" placeholder="请选择">
+            <el-option
+              v-for="item in approveOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="120">
+        <template slot-scope="scope">
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="operate(scope.row)">
+            确定
+          </el-button>
+        </template>
+      </el-table-column>
+      <!-- 
       <el-table-column width="100px" label="Importance">
         <template slot-scope="scope">
           <svg-icon
@@ -66,7 +176,7 @@
           />
         </template>
       </el-table-column>
-
+      
       <el-table-column class-name="status-col" label="Status" width="110">
         <template slot-scope="{ row }">
           <el-tag :type="row.status | statusFilter"> {{ row.status }} </el-tag>
@@ -87,7 +197,7 @@
             <el-button type="primary" size="small" icon="el-icon-edit"> Edit </el-button>
           </router-link>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
 
     <pagination
@@ -101,13 +211,14 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article';
+import { fetchList, orderAudit } from '@/api/order';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 
 export default {
   name: 'Order',
   components: { Pagination },
   filters: {
+    //上面的parseTime也是filter
     statusFilter(status) {
       const statusMap = {
         published: 'success',
@@ -115,6 +226,16 @@ export default {
         deleted: 'danger',
       };
       return statusMap[status];
+    },
+    parsePlatform(platform) {
+      const platformMap = {
+        1: '淘宝',
+        2: '京东',
+        3: '拼多多',
+        4: '唯品会',
+        5: '苏宁易购',
+      };
+      return platformMap[platform];
     },
   },
   data() {
@@ -125,9 +246,21 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
+        status: 0,
+        orderStatus: 15,
+        dateRange: [new Date().setDate(new Date().getDate() - 7), new Date()],
       },
       options: [],
-      orderStatus: '',
+      approveOptions: [
+        {
+          value: -1,
+          label: '拒绝',
+        },
+        {
+          value: 1,
+          label: '同意',
+        },
+      ],
     };
   },
   created() {
@@ -138,40 +271,120 @@ export default {
     getList() {
       this.listLoading = true;
       fetchList(this.listQuery).then((response) => {
-        this.list = response.data.items;
-        this.total = response.data.total;
+        console.log('records = ' + response.data.data.records);
+        this.list = response.data.data.records;
+        this.total = Number(response.data.data.total);
         this.listLoading = false;
       });
+    },
+
+    operate(row) {
+      if (row.approveOption == undefined) {
+        this.$alert('请选择"操作"', '数据不完整', {
+          confirmButtonText: '确定',
+          callback: (action) => {
+            this.$message({
+              type: 'info',
+              message: `action: ${action}`,
+            });
+          },
+        });
+      }
+      if (row.approveOption == -1) {
+        this.$prompt('请输入拒绝理由', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        })
+          .then(({ value }) => {
+            row.remark = value;
+            orderAudit(row, row.approveOption).then((response) => {
+              console.log('code = ' + response.data.code);
+              if (response.data.code == 0) {
+                this.$message({
+                  type: 'success',
+                  message: '审核成功: 拒绝' + value,
+                });
+                this.getList();
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: '审核失败: 拒绝' + value,
+                });
+              }
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '取消输入',
+            });
+          });
+      } else {
+        if (row.actualCommissionAmount > 0) {
+          if (row.finalCommissionAmount == undefined || row.finalCommissionAmount == '') {
+            this.$message({
+              type: 'error',
+              message: '最终佣金不能为空',
+            });
+          }
+          if (row.userFinalCommissionAmount == undefined || row.userFinalCommissionAmount == '') {
+            this.$message({
+              type: 'error',
+              message: '用户最终佣金不能为空',
+            });
+          }
+        }
+
+        orderAudit(row, row.approveOption).then((response) => {
+          console.log('code = ' + response.data.code);
+          if (response.data.code == 0) {
+            this.$message({
+              type: 'success',
+              message: '审核成功: 同意',
+            });
+            this.getList();
+          } else {
+            this.$message({
+              type: 'error',
+              message: '审核失败: 同意',
+            });
+          }
+        });
+      }
     },
 
     setOptions() {
       this.options = [
         {
-          value: '1',
+          value: -1,
+          label: '无效',
+        },
+        {
+          value: 1,
           label: '下单未付款',
         },
         {
-          value: '5',
+          value: 5,
           label: '已付款',
         },
         {
-          value: '7',
+          value: 7,
           label: '已成团（pdd）',
         },
         {
-          value: '10',
+          value: 10,
           label: '已确认收货',
         },
         {
-          value: '12',
+          value: 12,
           label: '审核成功（pdd）',
         },
         {
-          value: '15',
+          value: 15,
           label: '商家已支付佣金',
         },
         {
-          value: '20',
+          value: 20,
           label: '已付定金',
         },
       ];
