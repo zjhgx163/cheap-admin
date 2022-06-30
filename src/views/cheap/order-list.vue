@@ -111,7 +111,10 @@
       </el-table-column>
       <el-table-column align="center" label="最终佣金" width="90">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.finalCommissionAmount"></el-input>
+          <el-input
+            v-model="scope.row.finalCommissionAmount"
+            @change="inputFinalCommissionAmount(scope.row)"
+          ></el-input>
         </template>
       </el-table-column>
       <el-table-column align="center" label="平台佣金率" width="70">
@@ -350,6 +353,12 @@ export default {
             });
           }
         });
+      }
+    },
+    inputFinalCommissionAmount(row) {
+      if (row.finalCommissionAmount > 0) {
+        let userFinalCommissionAmount = (row.finalCommissionAmount * row.shareRate) / 100;
+        row.userFinalCommissionAmount = userFinalCommissionAmount.toFixed(2);
       }
     },
 
