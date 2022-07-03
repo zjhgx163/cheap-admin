@@ -292,6 +292,7 @@ export default {
             });
           },
         });
+        return;
       }
       if (row.approveOption == -1) {
         this.$prompt('请输入拒绝理由', '提示', {
@@ -329,12 +330,14 @@ export default {
               type: 'error',
               message: '最终佣金不能为空',
             });
+            return;
           }
           if (row.userFinalCommissionAmount == undefined || row.userFinalCommissionAmount == '') {
             this.$message({
               type: 'error',
               message: '用户最终佣金不能为空',
             });
+            return;
           }
         }
 

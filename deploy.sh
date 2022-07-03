@@ -5,6 +5,11 @@ sshName=hjdang@42.192.51.99
 
 npm run build:prod
 tar cvf dist.tar ./dist
+ssh -T $sshName  << 'EOSSH'
+    cd ~/hjdang-admin
+    rm -rf *
+EOSSH
+
 scp ./dist.tar  $sshName":/home/hjdang/hjdang-admin"
 
 ssh -T $sshName  << 'EOSSH'
