@@ -1,5 +1,16 @@
 <template>
   <div>
+    <el-dialog title="打款" width="20%" :visible.sync="dialogVisible">
+      <el-card>
+        <el-row type="flex" justify="center">
+          <el-image style="width: 250px; height: 250px" :src="qrUrl" fit="cover"></el-image>
+        </el-row>
+      </el-card>
+      <div slot="footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="withdrawSuccessful">成功</el-button>
+      </div>
+    </el-dialog>
     <el-row :gutter="5" style="margin: 40px 15px 40px">
       <el-col :span="7" :xs="24">
         <div class="block">
@@ -17,8 +28,8 @@
 
       <el-col :span="5" :xs="24">
         <div class="block">
-          订单状态：
-          <el-select clearable v-model="listQuery.orderStatus" placeholder="请选择">
+          状态：
+          <el-select clearable v-model="listQuery.status" placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -29,19 +40,6 @@
         </div>
       </el-col>
 
-      <el-col :span="5" :xs="24">
-        <div class="block">
-          结算状态：
-          <el-select clearable v-model="listQuery.status" placeholder="请选择">
-            <el-option
-              v-for="item in auditOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </div>
-      </el-col>
       <el-col :span="3" :xs="24">
         <div class="block">
           <el-button type="primary" @click.prevent.stop="getList">查询</el-button>
@@ -57,27 +55,56 @@
       highlight-current-row
       style="width: 100%"
     >
-      <el-table-column align="center" label="邀请码" width="75">
+      <el-table-column align="center" label="邀请码" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.inviteCode }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="平台订单号" width="170">
+      <el-table-column align="center" label="提现方式" width="140">
         <template slot-scope="scope">
-          <span>{{ scope.row.platformOrderNo }}</span>
+          <span>{{ scope.row.withdrawType | parseWithdrawType }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="平台" width="60">
+      <!-- <el-table-column align="center" label="二维码" width="60">
         <template slot-scope="scope">
-          <span>{{ scope.row.platform | parsePlatform }}</span>
+          <el-image
+            style="width: 80px; height: 80px"
+            :src="scope.row.qrUrl"
+            :preview-src-list="scope.row.qrUrl"
+            fit="fill"
+          ></el-image>
+        </template>
+      </el-table-column> -->
+
+      <el-table-column align="center" label="提现金额" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.amount }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="140px" align="center" label="下单时间">
+      <el-table-column align="center" label="可提现金额" width="100">
         <template slot-scope="scope">
-          <span>{{ scope.row.orderTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ scope.row.withdrawableAmount }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="已提现金额" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.withdrawedAmount }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="状态" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.status | parseStatus }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="140px" align="center" label="申请时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
@@ -87,83 +114,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="140px" align="center" label="完成时间">
+      <el-table-column align="center" label="描述" width="220">
         <template slot-scope="scope">
-          <span>{{ scope.row.finishTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="商品标题" width="220">
-        <template slot-scope="scope">
-          <span>{{ scope.row.itemTitle }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="商品图片" width="100">
-        <template slot-scope="scope">
-          <img :src="scope.row.itemImg" style="width: 80px; height: 80px" />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="预估计佣金额" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.estimateCosAmount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="实际计佣金额" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.actualCosAmount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="预估佣金" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.estimateCommissionAmount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="实际佣金" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.actualCommissionAmount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="最终佣金" width="90">
-        <template slot-scope="scope">
-          <el-input
-            v-model="scope.row.finalCommissionAmount"
-            @change="inputFinalCommissionAmount(scope.row)"
-            :readonly="scope.row.status == 1"
-          ></el-input>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="平台佣金率" width="70">
-        <template slot-scope="scope">
-          <span>%{{ scope.row.commissionRate }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="分成比例" width="70">
-        <template slot-scope="scope">
-          <span>%{{ scope.row.shareRate }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="用户实际佣金" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.userActualCommissionAmount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="用户最终佣金" width="90">
-        <template slot-scope="scope">
-          <el-input
-            v-model="scope.row.userFinalCommissionAmount"
-            :readonly="scope.row.status == 1"
-          ></el-input>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="数量" width="40">
-        <template slot-scope="scope">
-          <span>{{ scope.row.itemQuantity }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="单价" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.itemPrice }}</span>
+          <span>{{ scope.row.remark }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="操作" width="120">
@@ -183,7 +136,7 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="120">
+      <el-table-column align="center" width="120" label="操作">
         <template slot-scope="scope">
           <el-button
             type="primary"
@@ -242,31 +195,29 @@
 </template>
 
 <script>
-import { fetchList, orderAudit } from '@/api/order';
+import { fetchList, getUserAccount, withdrawResult } from '@/api/withdraw';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 
 export default {
-  name: 'Order',
+  name: 'Withdraw',
   components: { Pagination },
   filters: {
     //上面的parseTime也是filter
-    statusFilter(status) {
+    parseWithdrawType(type) {
+      const withdrawTypeMap = {
+        1: '微信收款码',
+        2: '人工转账',
+        3: '微信零钱',
+      };
+      return withdrawTypeMap[type];
+    },
+    parseStatus(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger',
+        0: '用户申请',
+        1: '已支付',
+        '-1': '支付拒绝',
       };
       return statusMap[status];
-    },
-    parsePlatform(platform) {
-      const platformMap = {
-        1: '淘宝',
-        2: '京东',
-        3: '拼多多',
-        4: '唯品会',
-        5: '苏宁易购',
-      };
-      return platformMap[platform];
     },
   },
   data() {
@@ -278,11 +229,9 @@ export default {
         page: 1,
         limit: 20,
         status: 0,
-        orderStatus: 15,
         dateRange: [new Date().setDate(new Date().getDate() - 7), new Date()],
       },
       options: [],
-      auditOptions: [],
       approveOptions: [
         {
           value: -1,
@@ -290,9 +239,12 @@ export default {
         },
         {
           value: 1,
-          label: '同意',
+          label: '打款',
         },
       ],
+      dialogVisible: false,
+      qrUrl: '',
+      operatingRow: null,
     };
   },
   created() {
@@ -323,6 +275,8 @@ export default {
         });
         return;
       }
+      this.operatingRow = row;
+      //提现驳回
       if (row.approveOption == -1) {
         this.$prompt('请输入拒绝理由', '提示', {
           confirmButtonText: '确定',
@@ -330,117 +284,87 @@ export default {
         })
           .then(({ value }) => {
             row.remark = value;
-            orderAudit(row, row.approveOption).then((response) => {
+            withdrawResult(row, row.approveOption).then((response) => {
               console.log('code = ' + response.data.code);
               if (response.data.code == 0) {
                 this.$message({
                   type: 'success',
-                  message: '审核成功: 拒绝' + value,
+                  message: '操作成功: 提现拒绝' + value,
                 });
                 this.getList();
               } else {
                 this.$message({
                   type: 'error',
-                  message: '审核失败: 拒绝' + value,
+                  message: '操作失败: 提现拒绝' + value,
                 });
               }
             });
           })
           .catch(() => {
             this.$message({
-              type: 'info',
+              type: 'error',
               message: '取消输入',
             });
           });
-      } else {
-        if (row.actualCommissionAmount > 0) {
-          if (row.finalCommissionAmount == undefined || row.finalCommissionAmount == '') {
-            this.$message({
-              type: 'error',
-              message: '最终佣金不能为空',
-            });
-            return;
-          }
-          if (row.userFinalCommissionAmount == undefined || row.userFinalCommissionAmount == '') {
-            this.$message({
-              type: 'error',
-              message: '用户最终佣金不能为空',
-            });
-            return;
-          }
-        }
 
-        orderAudit(row, row.approveOption).then((response) => {
+        this.operatingRow = null;
+      } else {
+        getUserAccount(row.userId).then((response) => {
           console.log('code = ' + response.data.code);
           if (response.data.code == 0) {
-            this.$message({
-              type: 'success',
-              message: '审核成功: 同意',
-            });
-            this.getList();
+            this.dialogVisible = true; //打开会话框
+            console.log(response.data.data.userWechatReceiveMoneyQr);
+            if (
+              response.data.data.userWechatReceiveMoneyQr != '' &&
+              response.data.data.userWechatReceiveMoneyQr != null
+            ) {
+              this.qrUrl = response.data.data.userWechatReceiveMoneyQr;
+            }
           } else {
             this.$message({
               type: 'error',
-              message: '审核失败: 同意',
+              message: '内部错误',
             });
           }
         });
+        this.getList();
       }
     },
-    inputFinalCommissionAmount(row) {
-      if (row.finalCommissionAmount > 0) {
-        let userFinalCommissionAmount = (row.finalCommissionAmount * row.shareRate) / 100;
-        row.userFinalCommissionAmount = userFinalCommissionAmount.toFixed(2);
-      }
+
+    withdrawSuccessful() {
+      withdrawResult(this.operatingRow, 1).then((response) => {
+        console.log('code = ' + response.data.code);
+        if (response.data.code == 0) {
+          this.$message({
+            type: 'success',
+            message: '操作成功: 提现',
+          });
+
+          this.getList();
+        } else {
+          this.$message({
+            type: 'error',
+            message: '操作失败: 提现',
+          });
+        }
+        this.dialogVisible = false;
+        this.operatingRow = null;
+      });
     },
 
     setOptions() {
       this.options = [
         {
           value: -1,
-          label: '无效',
-        },
-        {
-          value: 1,
-          label: '下单未付款',
-        },
-        {
-          value: 5,
-          label: '已付款',
-        },
-        {
-          value: 7,
-          label: '已成团（pdd）',
-        },
-        {
-          value: 10,
-          label: '已确认收货',
-        },
-        {
-          value: 12,
-          label: '审核成功（pdd）',
-        },
-        {
-          value: 15,
-          label: '商家已支付佣金',
-        },
-        {
-          value: 20,
-          label: '已付定金',
-        },
-      ];
-      this.auditOptions = [
-        {
-          value: -1,
-          label: '无效订单',
+          label: '支付驳回',
         },
         {
           value: 0,
-          label: '未结算',
+          label: '用户申请',
         },
         {
           value: 1,
-          label: '已结算',
+          label: '已支付',
         },
       ];
     },

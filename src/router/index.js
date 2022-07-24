@@ -154,6 +154,29 @@ export const asyncRoutes = [
     ],
   },
   {
+    path: '/withdraw',
+    component: Layout,
+    redirect: '/withdraw/list',
+    alwaysShow: true,
+    name: 'Withdraw',
+    meta: {
+      title: 'withdraw',
+      icon: 'el-icon-bank-card',
+      roles: ['admin', 'editor'],
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/cheap/withdraw-list'),
+        name: 'WithdrawList',
+        meta: {
+          title: 'withdrawList',
+          roles: ['admin'], // or you can only set roles in sub nav
+        },
+      },
+    ],
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/page',
