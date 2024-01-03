@@ -1,7 +1,7 @@
 #!/bin/bash
 shell_log="/Users/gaoxianghu/temp/log/realmoney_test_shell.log"
 
-sshName=hjdang@42.192.51.99
+sshName=hjdang@111.230.194.84
 
 npm run build:prod
 tar cvf dist.tar ./dist
