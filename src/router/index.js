@@ -177,6 +177,29 @@ export const asyncRoutes = [
     ],
   },
   {
+    path: '/yunpan',
+    component: Layout,
+    redirect: '/yunpan/list',
+    alwaysShow: true,
+    name: 'Yunpan',
+    meta: {
+      title: 'yunpans',
+      icon: 'documentation',
+      roles: ['admin', 'editor'],
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/yunpan/yunpan-list'),
+        name: 'YunpanList',
+        meta: {
+          title: 'yunpanList',
+          roles: ['admin'], // or you can only set roles in sub nav
+        },
+      },
+    ],
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/page',

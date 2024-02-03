@@ -9,7 +9,11 @@
       class="board-column-content"
       :set-data="setData"
     >
-      <div v-for="element in list" :key="element.id" class="board-item">
+      <div
+        v-for="element in list"
+        :key="element.id"
+        class="board-item"
+      >
         {{ element.name }} {{ element.id }}
       </div>
     </draggable>
@@ -17,39 +21,39 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+import draggable from 'vuedraggable';
 
 export default {
   name: 'DragKanbanDemo',
   components: {
-    draggable
+    draggable,
   },
   props: {
     headerText: {
       type: String,
-      default: 'Header'
+      default: 'Header',
     },
     options: {
       type: Object,
       default() {
-        return {}
-      }
+        return {};
+      },
     },
     list: {
       type: Array,
       default() {
-        return []
-      }
-    }
+        return [];
+      },
+    },
   },
   methods: {
     setData(dataTransfer) {
       // to avoid Firefox bug
       // Detail see : https://github.com/RubaXa/Sortable/issues/1012
-      dataTransfer.setData('Text', '')
-    }
-  }
-}
+      dataTransfer.setData('Text', '');
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 .board-column {
@@ -96,4 +100,3 @@ export default {
   }
 }
 </style>
-

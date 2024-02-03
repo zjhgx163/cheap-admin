@@ -22,7 +22,10 @@ module.exports = {
     // Uncomment any of the lines below to choose desired strictness,
     // but leave only one uncommented!
     // See https://eslint.vuejs.org/rules/#available-rules
+    '@vue/prettier',
+
     'plugin:vue/essential', // Priority A: Essential (Error Prevention)
+
     // 'plugin:vue/strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
     // 'plugin:vue/recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
@@ -31,7 +34,7 @@ module.exports = {
     'plugin:prettier/recommended',
     // "prettier",
     'plugin:vue/recommended',
-    'eslint:recommended',
+    // 'eslint:recommended',
     // "prettier/vue"
   ],
 
@@ -58,9 +61,8 @@ module.exports = {
   // add your custom rules here
   rules: {
     'prefer-promise-reject-errors': 'off',
-    'prettier/prettier': 'error',
+    'prettier/prettier': 'off',
     'vue/multi-word-component-names': 'off',
-    'vue/no-mutating-props': 'off',
     'vue/no-mutating-props': 'off',
     'no-useless-escape': 'off',
     'no-undef': 0, //使用未声名的变量
