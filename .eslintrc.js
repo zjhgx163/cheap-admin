@@ -5,7 +5,7 @@ module.exports = {
   root: true,
 
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: '@babel/eslint-parser',
     ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module', // Allows for the use of imports
   },
@@ -59,6 +59,13 @@ module.exports = {
   rules: {
     'prefer-promise-reject-errors': 'off',
     'prettier/prettier': 'error',
+    'vue/multi-word-component-names': 'off',
+    'vue/no-mutating-props': 'off',
+    'vue/no-mutating-props': 'off',
+    'no-useless-escape': 'off',
+    'no-undef': 0, //使用未声名的变量
+    'no-unused-vars': 0, //声名未使用
+    //关闭eslint检查文件名是否为驼峰命名
 
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
