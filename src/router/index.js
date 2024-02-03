@@ -176,6 +176,7 @@ export const asyncRoutes = [
       },
     ],
   },
+
   {
     path: '/yunpan',
     component: Layout,
@@ -199,6 +200,7 @@ export const asyncRoutes = [
       },
     ],
   },
+
   {
     path: '/permission',
     component: Layout,
