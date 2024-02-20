@@ -1,13 +1,7 @@
 <template>
   <div>
-    <el-row
-      :gutter="5"
-      style="margin: 40px 15px 40px"
-    >
-      <el-col
-        :span="7"
-        :xs="24"
-      >
+    <el-row :gutter="1" style="margin: 40px 15px 40px">
+      <el-col :span="7" :xs="24">
         <div class="block">
           日期选择：
           <el-date-picker
@@ -21,17 +15,10 @@
         </div>
       </el-col>
 
-      <el-col
-        :span="5"
-        :xs="24"
-      >
+      <el-col :span="5" :xs="24">
         <div class="block">
           爬取/自有：
-          <el-select
-            v-model="listQuery.source"
-            clearable
-            placeholder="请选择"
-          >
+          <el-select v-model="listQuery.source" clearable placeholder="请选择">
             <el-option
               v-for="item in sourceOptions"
               :key="item.value"
@@ -42,17 +29,10 @@
         </div>
       </el-col>
 
-      <el-col
-        :span="5"
-        :xs="24"
-      >
+      <el-col :span="5" :xs="24">
         <div class="block">
           修改状态：
-          <el-select
-            v-model="listQuery.editStatus"
-            clearable
-            placeholder="请选择"
-          >
+          <el-select v-model="listQuery.editStatus" clearable placeholder="请选择">
             <el-option
               v-for="item in editStatusOptions"
               :key="item.value"
@@ -63,17 +43,10 @@
         </div>
       </el-col>
 
-      <el-col
-        :span="5"
-        :xs="24"
-      >
+      <el-col :span="5" :xs="24">
         <div class="block">
           有效状态：
-          <el-select
-            v-model="listQuery.validStatus"
-            clearable
-            placeholder="请选择"
-          >
+          <el-select v-model="listQuery.validStatus" clearable placeholder="请选择">
             <el-option
               v-for="item in validStatusOptions"
               :key="item.value"
@@ -83,24 +56,32 @@
           </el-select>
         </div>
       </el-col>
+    </el-row>
 
-      <el-input
-        v-model="inputData"
-        placeholder="ID"
-        style="width: 400px; max-width: 100%"
-      />
-
-      <el-col
-        :span="3"
-        :xs="24"
-      >
+    <el-row :gutter="1" style="margin: 40px 15px 40px">
+      <el-col :span="5" :xs="24">
         <div class="block">
-          <el-button
-            type="primary"
-            @click.prevent.stop="getList"
-          >
-            查询
-          </el-button>
+          搜索引擎：
+          <el-select v-model="listQuery.searchEngineCrawled" clearable placeholder="请选择">
+            <el-option
+              v-for="item in searchEngineOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+      </el-col>
+      <el-col :span="6" :xs="24">
+        <div class="block">
+          输入ID：
+          <el-input v-model="inputData" placeholder="ID" style="width: 300px; max-width: 100%" />
+        </div>
+      </el-col>
+
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          <el-button type="primary" @click.prevent.stop="getList"> 查询 </el-button>
         </div>
       </el-col>
     </el-row>
@@ -112,143 +93,88 @@
       fit
       highlight-current-row
       style="width: 100%"
+      stripe
     >
-      <el-table-column
-        align="center"
-        label="来源"
-        width="70"
-      >
+      <el-table-column align="center" label="标题" width="170">
         <template slot-scope="scope">
-          <span>{{ scope.row.source }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        align="center"
-        label="帖子标识"
-        width="60"
-      >
-        <template slot-scope="scope">
-          <span>{{ scope.row.dataId }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column
-        align="center"
-        label="标题"
-        width="75"
-      >
-        <template slot-scope="scope">
-          <router-link
-            v-slot="{ href, navigate }"
-            class="link-type"
+          <a :href="'https://www.hjdang.com/d/' + scope.row.id" class="link-type">
+            {{ scope.row.title }}</a
           >
-            <a
-              :href="href"
-              @click="navigate"
-            >
-              <span>{{ scope.row.title }}</span></a>
-          </router-link>
+          <!-- <router-link v-slot="{ href,navigate }"  to="/about">
+ 
+          </router-link> -->
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="修改过的标题"
-        width="75"
-      >
+      <el-table-column align="center" label="修改过的标题" width="170">
         <template slot-scope="scope">
           <span>{{ scope.row.titleGpt }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="头像"
-        width="75"
-      >
+      <el-table-column align="center" label="头像" width="75">
         <template slot-scope="scope">
-          <span>{{ scope.row.avatar }}</span>
+          <el-avatar :src="scope.row.avatar"></el-avatar>
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="楼主"
-        width="75"
-      >
+      <el-table-column align="center" label="楼主" width="90">
         <template slot-scope="scope">
           <span>{{ scope.row.auther }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="混淆头像"
-        width="75"
-      >
+      <el-table-column align="center" label="混淆头像" width="85">
         <template slot-scope="scope">
-          <span>{{ scope.row.confusedAvatar }}</span>
+          <img :src="scope.row.confusedAvatar" />
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="混淆楼主"
-        width="75"
-      >
+      <el-table-column align="center" label="混淆楼主" width="90">
         <template slot-scope="scope">
           <span>{{ scope.row.confusedAuther }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        align="center"
-        label="标签"
-        width="40"
-      >
+      <el-table-column align="center" label="来源" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.source }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="标识" width="60">
+        <template slot-scope="scope">
+          <span>{{ scope.row.dataId }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="标签" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.tag }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        width="140px"
-        align="center"
-        label="发布时间"
-      >
+      <el-table-column width="140" align="center" label="发布时间">
         <template slot-scope="scope">
           <span>{{ scope.row.itemCreateDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        width="140px"
-        align="center"
-        label="最后回帖时间"
-      >
+      <el-table-column width="140" align="center" label="最后回帖时间">
         <template slot-scope="scope">
           <span>{{ scope.row.lastPostDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        width="140px"
-        align="center"
-        label="链接"
-      >
+      <el-table-column width="160" align="center" label="链接">
         <template slot-scope="scope">
           <span>{{ scope.row.yunpanLinks }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        class-name="status-col"
-        label="EditStatus"
-        width="110"
-      >
+      <el-table-column class-name="status-col" label="编辑状态" width="80">
         <template slot-scope="{ row }">
-          <el-tag :type="row.editStatus | editStatusFilter">
+          <el-tag :type="row.editStatus | editStatusFilter" effect="dark">
             {{ row.editStatus | parseEditStatus }}
           </el-tag>
         </template>
@@ -269,10 +195,7 @@
           </el-select>
         </template>
       </el-table-column> -->
-      <el-table-column
-        align="center"
-        width="120"
-      >
+      <el-table-column align="center" width="100" label="编辑">
         <template slot-scope="scope">
           <el-button
             type="primary"
@@ -281,10 +204,11 @@
             :disabled="scope.row.status != 0"
             @click="operate(scope.row)"
           >
-            确定
+            编辑
           </el-button>
         </template>
       </el-table-column>
+
       <!-- 
       <el-table-column width="100px" label="Importance">
         <template slot-scope="scope">
@@ -337,8 +261,9 @@ export default {
     editStatusFilter(status) {
       const statusMap = {
         0: 'info',
-        1: '',
-        2: 'success',
+        1: 'warning',
+        2: '',
+        3: 'success',
       };
       return statusMap[status];
     },
@@ -362,11 +287,13 @@ export default {
         source: 0,
         validStatus: 1,
         editStatus: 0,
-        dateRange: [new Date().setDate(new Date().getDate() - 7), new Date()],
+        searchEngineCrawled: 0,
+        dateRange: null,
       },
       sourceOptions: [],
       editStatusOptions: [],
       validStatusOptions: [],
+      searchEngineOptions: [],
       approveOptions: [
         {
           value: -1,
@@ -377,6 +304,7 @@ export default {
           label: '同意',
         },
       ],
+      inputData: '',
     };
   },
   created() {
@@ -387,7 +315,7 @@ export default {
     getList() {
       this.listLoading = true;
       fetchList(this.listQuery).then((response) => {
-        console.log('records = ' + response.data.data.records);
+        console.log('records = ', response.data.data.records);
         this.list = response.data.data.records;
         this.total = Number(response.data.data.total);
         this.listLoading = false;
@@ -522,6 +450,29 @@ export default {
         {
           value: 1,
           label: '有效',
+        },
+      ];
+      this.searchEngineOptions = [
+        { value: 0, label: 'All' },
+        {
+          value: 1,
+          label: 'baidu',
+        },
+        {
+          value: 2,
+          label: 'google',
+        },
+        {
+          value: 3,
+          label: 'bing',
+        },
+        {
+          value: 4,
+          label: 'sogou',
+        },
+        {
+          value: 5,
+          label: 'shenma',
         },
       ];
     },

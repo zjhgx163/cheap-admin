@@ -3,12 +3,12 @@
     <el-dialog title="打款" width="20%" :visible.sync="dialogVisible">
       <el-card>
         <el-row type="flex" justify="center">
-          <el-image style="width: 250px; height: 250px" :src="qrUrl" fit="cover"></el-image>
+          <el-image style="width: 250px; height: 250px" :src="qrUrl" fit="cover" />
         </el-row>
       </el-card>
       <div slot="footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="withdrawSuccessful">成功</el-button>
+        <el-button @click="dialogVisible = false"> 取 消 </el-button>
+        <el-button type="primary" @click="withdrawSuccessful"> 成功 </el-button>
       </div>
     </el-dialog>
     <el-row :gutter="5" style="margin: 40px 15px 40px">
@@ -29,7 +29,7 @@
       <el-col :span="5" :xs="24">
         <div class="block">
           状态：
-          <el-select clearable v-model="listQuery.status" placeholder="请选择">
+          <el-select v-model="listQuery.status" clearable placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -42,7 +42,7 @@
 
       <el-col :span="3" :xs="24">
         <div class="block">
-          <el-button type="primary" @click.prevent.stop="getList">查询</el-button>
+          <el-button type="primary" @click.prevent.stop="getList"> 查询 </el-button>
         </div>
       </el-col>
     </el-row>
@@ -131,8 +131,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            />
           </el-select>
         </template>
       </el-table-column>
@@ -142,8 +141,8 @@
             type="primary"
             size="small"
             icon="el-icon-edit"
-            @click="operate(scope.row)"
             :disabled="scope.row.status != 0"
+            @click="operate(scope.row)"
           >
             确定
           </el-button>
@@ -251,6 +250,7 @@ export default {
     this.setOptions(); // set default select options
     this.getList();
   },
+
   methods: {
     getList() {
       this.listLoading = true;
