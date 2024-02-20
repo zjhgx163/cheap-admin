@@ -18,7 +18,7 @@
       <el-col :span="5" :xs="24">
         <div class="block">
           订单状态：
-          <el-select clearable v-model="listQuery.orderStatus" placeholder="请选择">
+          <el-select v-model="listQuery.orderStatus" clearable placeholder="请选择">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -32,7 +32,7 @@
       <el-col :span="5" :xs="24">
         <div class="block">
           结算状态：
-          <el-select clearable v-model="listQuery.status" placeholder="请选择">
+          <el-select v-model="listQuery.status" clearable placeholder="请选择">
             <el-option
               v-for="item in auditOptions"
               :key="item.value"
@@ -44,7 +44,7 @@
       </el-col>
       <el-col :span="3" :xs="24">
         <div class="block">
-          <el-button type="primary" @click.prevent.stop="getList">查询</el-button>
+          <el-button type="primary" @click.prevent.stop="getList"> 查询 </el-button>
         </div>
       </el-col>
     </el-row>
@@ -127,9 +127,9 @@
         <template slot-scope="scope">
           <el-input
             v-model="scope.row.finalCommissionAmount"
-            @change="inputFinalCommissionAmount(scope.row)"
             :readonly="scope.row.status == 1"
-          ></el-input>
+            @change="inputFinalCommissionAmount(scope.row)"
+          />
         </template>
       </el-table-column>
       <el-table-column align="center" label="平台佣金率" width="70">
@@ -152,7 +152,7 @@
           <el-input
             v-model="scope.row.userFinalCommissionAmount"
             :readonly="scope.row.status == 1"
-          ></el-input>
+          />
         </template>
       </el-table-column>
       <el-table-column align="center" label="数量" width="40">
@@ -178,8 +178,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            />
           </el-select>
         </template>
       </el-table-column>
@@ -189,8 +188,8 @@
             type="primary"
             size="small"
             icon="el-icon-edit"
-            @click="operate(scope.row)"
             :disabled="scope.row.status != 0"
+            @click="operate(scope.row)"
           >
             确定
           </el-button>

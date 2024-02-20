@@ -75,7 +75,18 @@
       <el-col :span="6" :xs="24">
         <div class="block">
           输入ID：
-          <el-input v-model="inputData" placeholder="ID" style="width: 300px; max-width: 100%" />
+          <el-input v-model="listQuery.id" placeholder="ID" style="width: 300px; max-width: 100%" />
+        </div>
+      </el-col>
+
+      <el-col :span="6" :xs="24">
+        <div class="block">
+          关键字：
+          <el-input
+            v-model="listQuery.keyword"
+            placeholder="搜索关键字"
+            style="width: 300px; max-width: 100%"
+          />
         </div>
       </el-col>
 
@@ -86,20 +97,51 @@
       </el-col>
     </el-row>
 
+    <el-row :gutter="1" style="margin: 40px 15px 40px">
+      <el-col :span="6" :xs="24">
+        <div class="block">
+          替换链接
+          <el-input
+            v-model="listQuery.keyword"
+            placeholder="替换链接"
+            style="width: 300px; max-width: 100%"
+          />
+        </div>
+      </el-col>
+
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          <el-button type="primary" @click.prevent.stop="replaceLinks"> 执行 </el-button>
+        </div>
+      </el-col></el-row
+    >
+
     <el-table
       v-loading="listLoading"
       :data="list"
       border
+      tooltip-effect="light"
       fit
       highlight-current-row
       style="width: 100%"
       stripe
     >
+      <el-table-column type="selection" width="40"> </el-table-column>
+
+      <el-table-column width="170" align="center" label="ID">
+        <template slot-scope="scope">
+          <span>{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="标题" width="170">
         <template slot-scope="scope">
-          <a :href="'https://www.hjdang.com/d/' + scope.row.id" class="link-type">
-            {{ scope.row.title }}</a
-          >
+          <el-tooltip class="item" effect="dark" :content="scope.row.title" placement="top-start">
+            <a :href="'https://www.hjdang.com/d/' + scope.row.id" class="link-type">
+              {{ scope.row.title }}</a
+            >
+          </el-tooltip>
+
           <!-- <router-link v-slot="{ href,navigate }"  to="/about">
  
           </router-link> -->
@@ -142,7 +184,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="标识" width="60">
+      <el-table-column align="center" label="标识" width="60" show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ scope.row.dataId }}</span>
         </template>
@@ -154,21 +196,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="140" align="center" label="发布时间">
+      <el-table-column width="160" align="center" label="链接" show-overflow-tooltip="false">
         <template slot-scope="scope">
-          <span>{{ scope.row.itemCreateDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="140" align="center" label="最后回帖时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.lastPostDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="160" align="center" label="链接">
-        <template slot-scope="scope">
-          <span>{{ scope.row.yunpanLinks }}</span>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="scope.row.yunpanLinks"
+            placement="top-start"
+          >
+            <span>{{ scope.row.yunpanLinks }}</span>
+          </el-tooltip>
         </template>
       </el-table-column>
 
@@ -197,18 +234,23 @@
       </el-table-column> -->
       <el-table-column align="center" width="100" label="编辑">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="small"
-            icon="el-icon-edit"
-            :disabled="scope.row.status != 0"
-            @click="operate(scope.row)"
-          >
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="edit(scope.row)">
             编辑
           </el-button>
         </template>
       </el-table-column>
 
+      <el-table-column width="140" align="center" label="发布时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.itemCreateDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="140" align="center" label="最后回帖时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.lastPostDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
       <!-- 
       <el-table-column width="100px" label="Importance">
         <template slot-scope="scope">
@@ -289,6 +331,8 @@ export default {
         editStatus: 0,
         searchEngineCrawled: 0,
         dateRange: null,
+        id: '',
+        keyword: '',
       },
       sourceOptions: [],
       editStatusOptions: [],
@@ -304,7 +348,6 @@ export default {
           label: '同意',
         },
       ],
-      inputData: '',
     };
   },
   created() {
@@ -322,19 +365,7 @@ export default {
       });
     },
 
-    operate(row) {
-      if (row.approveOption == undefined) {
-        this.$alert('请选择"操作"', '数据不完整', {
-          confirmButtonText: '确定',
-          callback: (action) => {
-            this.$message({
-              type: 'info',
-              message: `action: ${action}`,
-            });
-          },
-        });
-        return;
-      }
+    edit(row) {
       if (row.approveOption == -1) {
         this.$prompt('请输入拒绝理由', '提示', {
           confirmButtonText: '确定',
