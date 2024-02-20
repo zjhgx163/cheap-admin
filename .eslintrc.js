@@ -22,7 +22,7 @@ module.exports = {
     // Uncomment any of the lines below to choose desired strictness,
     // but leave only one uncommented!
     // See https://eslint.vuejs.org/rules/#available-rules
-    '@vue/prettier',
+    // '@vue/prettier',
 
     'plugin:vue/essential', // Priority A: Essential (Error Prevention)
 
@@ -31,9 +31,9 @@ module.exports = {
 
     // https://github.com/prettier/eslint-config-prettier#installation
     // usage with Prettier, provided by 'eslint-config-prettier'.
-    'plugin:prettier/recommended',
-    // "prettier",
-    'plugin:vue/recommended',
+    // 'plugin:prettier/recommended',
+    'prettier',
+    // 'plugin:vue/recommended',
     // 'eslint:recommended',
     // "prettier/vue"
   ],
