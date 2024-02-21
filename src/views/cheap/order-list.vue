@@ -262,8 +262,8 @@ export default {
         1: '淘宝',
         2: '京东',
         3: '拼多多',
-        4: '唯品会',
-        5: '苏宁易购',
+        4: '美团',
+        5: '饿了么',
       };
       return platformMap[platform];
     },
