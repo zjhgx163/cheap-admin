@@ -42,6 +42,16 @@
           </el-select>
         </div>
       </el-col>
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          邀请码：
+          <el-input
+            v-model="listQuery.inviteCode"
+            placeholder="邀请码"
+            style="width: 160px; max-width: 100%"
+          />
+        </div>
+      </el-col>
       <el-col :span="3" :xs="24">
         <div class="block">
           <el-button type="primary" @click.prevent.stop="getList"> 查询 </el-button>
@@ -278,6 +288,7 @@ export default {
         limit: 20,
         status: 0,
         orderStatus: 15,
+        inviteCode: null,
         dateRange: [new Date().setDate(new Date().getDate() - 7), new Date()],
       },
       options: [],
