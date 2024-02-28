@@ -31,7 +31,7 @@
 
       <el-col :span="5" :xs="24">
         <div class="block">
-          修改状态：
+          编辑状态：
           <el-select v-model="listQuery.editStatus" clearable placeholder="请选择">
             <el-option
               v-for="item in editStatusOptions"
@@ -209,11 +209,20 @@
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="编辑状态" width="80">
+      <el-table-column class-name="status-col" label="编辑状态" width="150">
         <template slot-scope="{ row }">
-          <el-tag :type="row.editStatus | editStatusFilter" effect="dark">
-            {{ row.editStatus | parseEditStatus }}
-          </el-tag>
+          <el-row type="flex" justify="space-between" align="middle">
+            <el-col :span="12">
+              <el-tag :type="row.editStatus | editStatusFilter" size="small" effect="dark">
+                {{ row.editStatus | parseEditStatus }}
+              </el-tag>
+            </el-col>
+            <el-col :span="12">
+              <el-button type="text" size="mini" icon="el-icon-edit" @click="edit(scope.row)">
+                编辑
+              </el-button>
+            </el-col>
+          </el-row>
         </template>
       </el-table-column>
       <!-- <el-table-column align="center" label="操作" width="120">
@@ -232,13 +241,6 @@
           </el-select>
         </template>
       </el-table-column> -->
-      <el-table-column align="center" width="100" label="编辑">
-        <template slot-scope="scope">
-          <el-button type="primary" size="small" icon="el-icon-edit" @click="edit(scope.row)">
-            编辑
-          </el-button>
-        </template>
-      </el-table-column>
 
       <el-table-column width="140" align="center" label="发布时间">
         <template slot-scope="scope">
@@ -302,9 +304,9 @@ export default {
     //上面的parseTime也是filter
     editStatusFilter(status) {
       const statusMap = {
-        0: 'info',
+        0: 'error',
         1: 'warning',
-        2: '',
+        2: 'info',
         3: 'success',
       };
       return statusMap[status];
@@ -312,8 +314,9 @@ export default {
     parseEditStatus(status) {
       const statusMap = {
         0: '未编辑',
-        1: 'gpt编辑',
-        2: '人工编辑',
+        1: 'gpt编辑1',
+        2: 'gpt编辑2',
+        3: '人工编辑',
       };
       return statusMap[status];
     },
@@ -456,7 +459,7 @@ export default {
       this.editStatusOptions = [
         {
           value: 0,
-          label: '未修改',
+          label: '未编辑',
         },
         {
           value: 1,

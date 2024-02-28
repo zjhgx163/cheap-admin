@@ -176,7 +176,29 @@ export const asyncRoutes = [
       },
     ],
   },
-
+  {
+    path: '/manage',
+    component: Layout,
+    redirect: '/manage/article',
+    alwaysShow: true,
+    name: 'Manage',
+    meta: {
+      title: 'manage',
+      icon: 'el-icon-s-management',
+      roles: ['admin', 'editor'],
+    },
+    children: [
+      {
+        path: 'article',
+        component: () => import('@/views/manage/article-editor'),
+        name: 'Article',
+        meta: {
+          title: 'article',
+          roles: ['admin', 'editor'], // or you can only set roles in sub nav
+        },
+      },
+    ],
+  },
   {
     path: '/yunpan',
     component: Layout,
