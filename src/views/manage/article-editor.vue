@@ -3,8 +3,8 @@
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
       <sticky :z-index="10" :class-name="'sub-navbar ' + postForm.status">
         <CommentDropdown v-model="postForm.comment_disabled" />
-        <PlatformDropdown v-model="postForm.platforms" />
-        <SourceUrlDropdown v-model="postForm.source_uri" />
+        <PlatformDropdown v-model="postForm.platform" />
+        <KeywordDropdown v-model="postForm.keywords" />
         <el-button v-loading="loading" style="margin-left: 10px" type="success" @click="submitForm">
           Publish
         </el-button>
@@ -115,22 +115,18 @@ import { validURL } from '@/utils/validate';
 import { fetchArticle } from '@/api/article';
 import { searchUser } from '@/api/remote-search';
 import Warning from '../example/components/Warning';
-import {
-  CommentDropdown,
-  PlatformDropdown,
-  SourceUrlDropdown,
-} from '../example/components/Dropdown';
+import { CommentDropdown, PlatformDropdown, KeywordDropdown } from './components/Dropdown';
 
 const defaultForm = {
   status: 'draft',
   title: '', // 文章题目
   content: '', // 文章内容
   content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
+  keywords: '', // 文章外链
   image_uri: '', // 文章图片
   display_time: undefined, // 前台展示时间
   id: undefined,
-  platforms: ['a-platform'],
+  platform: 'Yunpan',
   comment_disabled: false,
   importance: 0,
 };
@@ -145,7 +141,7 @@ export default {
     Warning,
     CommentDropdown,
     PlatformDropdown,
-    SourceUrlDropdown,
+    KeywordDropdown,
   },
   props: {
     isEdit: {
@@ -188,7 +184,7 @@ export default {
         image_uri: [{ validator: validateRequire }],
         title: [{ validator: validateRequire }],
         content: [{ validator: validateRequire }],
-        source_uri: [{ validator: validateSourceUri, trigger: 'blur' }],
+        // source_uri: [{ validator: validateSourceUri, trigger: 'blur' }],
       },
       tempRoute: {},
     };

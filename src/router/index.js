@@ -189,12 +189,13 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'article',
+        path: 'article/:id',
         component: () => import('@/views/manage/article-editor'),
         name: 'Article',
         meta: {
           title: 'article',
           roles: ['admin', 'editor'], // or you can only set roles in sub nav
+          props: (route) => ({ type: route.query.type }),
         },
       },
     ],

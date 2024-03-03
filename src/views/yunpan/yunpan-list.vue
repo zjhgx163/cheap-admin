@@ -184,7 +184,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="标识" width="60" show-overflow-tooltip="true">
+      <el-table-column align="center" label="标识" width="60" show-overflow-tooltip>
         <template slot-scope="scope">
           <span>{{ scope.row.dataId }}</span>
         </template>
@@ -196,12 +196,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="160" align="center" label="链接" show-overflow-tooltip="false">
+      <el-table-column width="160" align="center" label="链接" show-overflow-tooltip>
         <template slot-scope="scope">
           <el-tooltip
             class="item"
             effect="dark"
-            :content="scope.row.yunpanLinks"
+            :content="
+              scope.row.yunpanLinks != null
+                ? scope.row.yunpanLinks.toString()
+                : scope.row.yunpanLinks
+            "
             placement="top-start"
           >
             <span>{{ scope.row.yunpanLinks }}</span>
@@ -218,9 +222,16 @@
               </el-tag>
             </el-col>
             <el-col :span="12">
-              <el-button type="text" size="mini" icon="el-icon-edit" @click="edit(scope.row)">
-                编辑
-              </el-button>
+              <router-link
+                :to="{
+                  path: '/manage/article/' + row.id,
+                  query: { type: 'yunpan' },
+                }"
+              >
+                <el-button type="text" size="mini" icon="el-icon-edit">
+                  编辑
+                </el-button></router-link
+              >
             </el-col>
           </el-row>
         </template>
