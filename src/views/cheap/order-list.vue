@@ -28,6 +28,19 @@
           </el-select>
         </div>
       </el-col>
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          商城：
+          <el-select v-model="listQuery.mall" clearable placeholder="请选择">
+            <el-option
+              v-for="item in mallOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+      </el-col>
 
       <el-col :span="5" :xs="24">
         <div class="block">
@@ -42,6 +55,8 @@
           </el-select>
         </div>
       </el-col>
+    </el-row>
+    <el-row style="margin: 40px 15px 40px">
       <el-col :span="4" :xs="24">
         <div class="block">
           邀请码：
@@ -111,6 +126,21 @@
       <el-table-column align="center" label="商品图片" width="100">
         <template slot-scope="scope">
           <img :src="scope.row.itemImg" style="width: 80px; height: 80px" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="订单状态" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.orderStatus | parseOrderStatus }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="状态描述" width="100">
+        <template slot-scope="scope">
+          <span>{{ scope.row.statusRemark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="结算状态" width="60">
+        <template slot-scope="scope">
+          <span>{{ scope.row.status | parseStatus }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="预估计佣金额" width="70">
@@ -277,6 +307,27 @@ export default {
       };
       return platformMap[platform];
     },
+    parseOrderStatus(orderStatus) {
+      const orderStatusMap = {
+        '-1': '无效',
+        1: '未付款',
+        5: '已付款',
+        7: '已成团（pdd）',
+        10: '已确认收货',
+        12: '审核成功（pdd）',
+        15: '商家已支付佣金',
+        20: '已付订金',
+      };
+      return orderStatusMap[orderStatus];
+    },
+    parseStatus(status) {
+      const statusMap = {
+        '-1': '无效订单',
+        0: '未结算',
+        1: '已结算',
+      };
+      return statusMap[status];
+    },
   },
   data() {
     return {
@@ -287,12 +338,14 @@ export default {
         page: 1,
         limit: 20,
         status: 0,
+        mall: null,
         orderStatus: 15,
         inviteCode: null,
         dateRange: [new Date().setDate(new Date().getDate() - 7), new Date()],
       },
       options: [],
       auditOptions: [],
+      mallOptions: [],
       approveOptions: [
         {
           value: -1,
@@ -451,6 +504,28 @@ export default {
         {
           value: 1,
           label: '已结算',
+        },
+      ];
+      this.mallOptions = [
+        {
+          value: 1,
+          label: '淘宝',
+        },
+        {
+          value: 2,
+          label: '京东',
+        },
+        {
+          value: 3,
+          label: '拼多多',
+        },
+        {
+          value: 4,
+          label: '美团',
+        },
+        {
+          value: 5,
+          label: '饿了么',
         },
       ];
     },
