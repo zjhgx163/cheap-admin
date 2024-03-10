@@ -192,10 +192,13 @@ export const asyncRoutes = [
         path: 'article/:id',
         component: () => import('@/views/manage/article-editor'),
         name: 'Article',
+        props: (route) => ({
+          type: route.query.type,
+          isEdit: String(route.query.isEdit).toLowerCase() === 'true',
+        }),
         meta: {
           title: 'article',
           roles: ['admin', 'editor'], // or you can only set roles in sub nav
-          props: (route) => ({ type: route.query.type }),
         },
       },
     ],

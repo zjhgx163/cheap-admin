@@ -1,14 +1,15 @@
 <template>
   <el-dropdown :show-timeout="100" trigger="click">
     <el-button plain>
-      {{ platform }}
+      {{ title + label }}
       <i class="el-icon-caret-bottom el-icon--right" />
     </el-button>
     <el-dropdown-menu slot="dropdown" class="no-padding">
       <el-dropdown-item>
-        <el-radio-group v-model="platform" style="padding: 10px">
-          <el-radio label="Yunpan"> Yunpan </el-radio>
-          <el-radio label="Goods"> Goods </el-radio>
+        <el-radio-group v-model="label" style="padding: 10px">
+          <el-radio v-for="(item, index) in labels" :key="index" :label="item">
+            {{ item }}
+          </el-radio>
         </el-radio-group>
       </el-dropdown-item>
     </el-dropdown-menu>
@@ -19,12 +20,17 @@
 export default {
   props: {
     value: {
+      type: [String, Boolean],
+    },
+    labels: {
+      type: Array,
+    },
+    title: {
       type: String,
-      default: 'Yunpan',
     },
   },
   computed: {
-    platform: {
+    label: {
       get() {
         return this.value;
       },

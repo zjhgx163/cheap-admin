@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import { service2 } from '@/utils/request';
 
 export function fetchList(query) {
   return request({
@@ -13,6 +14,14 @@ export function fetchArticle(id) {
     url: '/vue-element-admin/article/detail',
     method: 'get',
     params: { id },
+  });
+}
+
+export function getArticle(query) {
+  return service2({
+    url: '/admin/getArticle',
+    method: 'post',
+    data: query,
   });
 }
 

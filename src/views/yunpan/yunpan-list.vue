@@ -168,7 +168,7 @@
 
       <el-table-column align="center" label="混淆头像" width="85">
         <template slot-scope="scope">
-          <img :src="scope.row.confusedAvatar" />
+          <el-avatar :src="scope.row.confusedAvatar"></el-avatar>
         </template>
       </el-table-column>
 
@@ -225,7 +225,7 @@
               <router-link
                 :to="{
                   path: '/manage/article/' + row.id,
-                  query: { type: 'yunpan' },
+                  query: { type: 'yunpan', isEdit: true },
                 }"
               >
                 <el-button type="text" size="mini" icon="el-icon-edit">
