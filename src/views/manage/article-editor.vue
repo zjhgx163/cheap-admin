@@ -54,7 +54,7 @@
                       default-first-option
                       remote
                       clearable
-                      placeholder="Search user"
+                      :placeholder="autherName"
                     >
                       <el-option
                         style="margin-bottom: 5px"
@@ -79,7 +79,12 @@
                 </el-col>
 
                 <el-col :span="4">
-                  <el-form-item label-width="90px" label="标签:" class="postInfo-container-item">
+                  <el-form-item
+                    label-width="90px"
+                    label="标签:"
+                    class="postInfo-container-item"
+                    prop="tag"
+                  >
                     <el-select
                       v-model="postForm.tag"
                       default-first-option
@@ -121,7 +126,7 @@ import { validURL } from '@/utils/validate';
 import { getArticle } from '@/api/article';
 import { searchUser } from '@/api/remote-search';
 
-import { fetchRandomAutherList, submitArticle } from '@/api/yunpan';
+import { fetchRandomAutherList, submitArticle, fetchAuthorInfo } from '@/api/yunpan';
 import Warning from '../example/components/Warning';
 import { RadioButtonDropDown, KeywordDropdown } from './components/Dropdown';
 
@@ -199,10 +204,12 @@ export default {
         // image_uri: [{ validator: validateRequire }],
         titleGpt: [{ validator: validateRequire }],
         contentGpt: [{ validator: validateRequire }],
+        tag: [{ validator: validateRequire }],
         // source_uri: [{ validator: validateSourceUri, trigger: 'blur' }],
       },
       tempRoute: {},
       tagOptions: [],
+      autherName: '',
     };
   },
   computed: {
@@ -233,6 +240,8 @@ export default {
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id;
       this.fetchData({ id: id, type: this.type });
+    } else {
+      this.getRandomUserList();
     }
 
     // Why need to make a copy of this.$route here?
@@ -244,25 +253,35 @@ export default {
     fetchData(query) {
       getArticle(query)
         .then((response) => {
-          this.postForm = response.data.data;
-          if (this.postForm.source != 'self' && this.postForm.source.editStatus === 0) {
-            this.getRandomUserList();
-          }
-          if (this.postForm.status === -1) {
-            this.postForm.status = 'draft';
+          if (response.data.code == 0) {
+            this.postForm = response.data.data;
+            if (response.data.data.autherMixId != null && response.data.data.autherMixId > 0) {
+              this.getAutherInfo(response.data.data.autherMixId);
+            } else {
+              this.autherName = response.data.data.auther;
+            }
+            if (this.postForm.status === -1) {
+              this.postForm.status = 'draft';
+            } else {
+              this.postForm.status = 'published';
+            }
+
+            // just for test
+            // this.postForm.title += `   Article Id:${this.postForm.id}`;
+            // this.postForm.workesName += `   Article Id:${this.postForm.id}`;
+
+            // set tagsview title
+            this.setTagsViewTitle();
+
+            // set page title
+            this.setPageTitle();
           } else {
-            this.postForm.status = 'published';
+            this.$notify({
+              title: '获取文章信息失败',
+              type: 'error',
+              message: '获取文章信息失败：' + query.id,
+            });
           }
-
-          // just for test
-          // this.postForm.title += `   Article Id:${this.postForm.id}`;
-          // this.postForm.workesName += `   Article Id:${this.postForm.id}`;
-
-          // set tagsview title
-          this.setTagsViewTitle();
-
-          // set page title
-          this.setPageTitle();
         })
         .catch((err) => {
           console.log(err);
@@ -294,6 +313,9 @@ export default {
                 duration: 2000,
               });
               this.postForm.status = 'published';
+              setTimeout(() => {
+                this.$router.push({ path: '/yunpan' });
+              }, 500);
             } else {
               this.$notify({
                 title: '失败',
@@ -369,6 +391,12 @@ export default {
       fetchRandomAutherList().then((response) => {
         if (!response.data.data) return;
         this.userListOptions = response.data.data;
+      });
+    },
+    getAutherInfo(id) {
+      fetchAuthorInfo(id).then((response) => {
+        this.userListOptions.push(response.data.data);
+        this.postForm.autherMixId = response.data.data.id;
       });
     },
     searchUser(query) {

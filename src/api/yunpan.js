@@ -13,6 +13,13 @@ export function fetchRandomAutherList() {
     method: 'get',
   });
 }
+export function fetchAuthorInfo(id) {
+  return service2({
+    url: '/admin/getYunpanFakeUserInfo',
+    method: 'post',
+    params: { id },
+  });
+}
 export function submitArticle(query) {
   return service2({
     url: '/admin/submitArticle',
