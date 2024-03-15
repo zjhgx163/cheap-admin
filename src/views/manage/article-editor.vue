@@ -8,7 +8,7 @@
           title="Is Collections Resource: "
         />
         <RadioButtonDropDown
-          v-model="postForm.isBestArticle"
+          v-model="postForm.isBest"
           :labels="[true, false]"
           title="Is Best Article: "
         />
@@ -19,7 +19,7 @@
         />
         <RadioButtonDropDown
           v-model="postForm.platform"
-          :labels="['yunpan', 'goods']"
+          :labels="['yunpan', 'top-article', 'article', 'goods']"
           title="Platform: "
         />
         <KeywordDropdown v-model="postForm.keywords" />
@@ -144,8 +144,9 @@ const defaultForm = {
   id: undefined,
   platform: 'yunpan',
   commentDisabled: 'Enable',
-  isBestArticle: false,
+  isBest: false,
   isCollection: false,
+  validStatus: 0,
   // importance: 0,
 };
 
@@ -167,6 +168,9 @@ export default {
     },
     type: {
       type: String,
+    },
+    validStatus: {
+      type: Number,
     },
   },
   data() {
@@ -239,7 +243,7 @@ export default {
     console.log(this.isEdit);
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id;
-      this.fetchData({ id: id, type: this.type });
+      this.fetchData({ id: id, type: this.type, validStatus: this.validStatus });
     } else {
       this.getRandomUserList();
     }
@@ -254,12 +258,19 @@ export default {
       getArticle(query)
         .then((response) => {
           if (response.data.code == 0) {
+            // autherMixId==0时展示autherName
+            if (response.data.data.autherMixId == 0) {
+              response.data.data.autherMixId = null;
+            }
             this.postForm = response.data.data;
             if (response.data.data.autherMixId != null && response.data.data.autherMixId > 0) {
               this.getAutherInfo(response.data.data.autherMixId);
             } else {
               this.autherName = response.data.data.auther;
             }
+            this.postForm.platform = 'yunpan';
+            this.postForm.commentDisabled = 'Enabled';
+            this.postForm.validStatus = this.validStatus;
             if (this.postForm.status === -1) {
               this.postForm.status = 'draft';
             } else {

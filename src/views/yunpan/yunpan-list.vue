@@ -225,7 +225,7 @@
               <router-link
                 :to="{
                   path: '/manage/article/' + row.id,
-                  query: { type: 'yunpan', isEdit: true },
+                  query: { type: 'yunpan', isEdit: true, validStatus: listQuery.validStatus },
                 }"
               >
                 <el-button type="text" size="mini" icon="el-icon-edit">
