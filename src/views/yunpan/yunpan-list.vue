@@ -196,23 +196,6 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="160" align="center" label="链接" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <el-tooltip
-            class="item"
-            effect="dark"
-            :content="
-              scope.row.yunpanLinks != null
-                ? scope.row.yunpanLinks.toString()
-                : scope.row.yunpanLinks
-            "
-            placement="top-start"
-          >
-            <span>{{ scope.row.yunpanLinks }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-
       <el-table-column class-name="status-col" label="编辑状态" width="150">
         <template slot-scope="{ row }">
           <el-row type="flex" justify="space-between" align="middle">
@@ -234,6 +217,57 @@
               >
             </el-col>
           </el-row>
+        </template>
+      </el-table-column>
+
+      <el-table-column class-name="status-col" label="操作" width="140">
+        <template slot-scope="{ row }">
+          <el-row type="flex" justify="space-between" align="middle">
+            <el-col :span="8">
+              <el-button
+                type="primary"
+                circle
+                size="mini"
+                icon="el-icon-remove"
+                @click="move(row.id)"
+              />
+            </el-col>
+            <el-col :span="8">
+              <el-button
+                type="warning"
+                circle
+                size="mini"
+                icon="el-icon-delete"
+                @click="remove(row.id)"
+              />
+            </el-col>
+            <el-col :span="8">
+              <el-button
+                type="danger"
+                circle
+                size="mini"
+                icon="el-icon-delete-solid"
+                @click="del(row.id)"
+              />
+            </el-col>
+          </el-row>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="160" align="center" label="链接" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="
+              scope.row.yunpanLinks != null
+                ? scope.row.yunpanLinks.toString()
+                : scope.row.yunpanLinks
+            "
+            placement="top-start"
+          >
+            <span>{{ scope.row.yunpanLinks }}</span>
+          </el-tooltip>
         </template>
       </el-table-column>
       <!-- <el-table-column align="center" label="操作" width="120">
@@ -307,6 +341,7 @@
 <script>
 import { fetchList } from '@/api/yunpan';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
+import { moveYunpnItem, removeYunpnItem, delYunpanItem } from '@/api/yunpan';
 
 export default {
   name: 'Yunpan',
@@ -378,72 +413,51 @@ export default {
         this.listLoading = false;
       });
     },
-
-    edit(row) {
-      if (row.approveOption == -1) {
-        this.$prompt('请输入拒绝理由', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-        })
-          .then(({ value }) => {
-            row.remark = value;
-            orderAudit(row, row.approveOption).then((response) => {
-              console.log('code = ' + response.data.code);
-              if (response.data.code == 0) {
-                this.$message({
-                  type: 'success',
-                  message: '审核成功: 拒绝' + value,
-                });
-                this.getList();
-              } else {
-                this.$message({
-                  type: 'error',
-                  message: '审核失败: 拒绝' + value,
-                });
-              }
-            });
-          })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: '取消输入',
-            });
+    /**
+     * 由于adsense收到report，需要把被report到的item换个ID
+     * @param {*} id
+     * @returns
+     */
+    move(id) {
+      this.$confirm('此操作会改变此云盘资源id, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          moveYunpnItem(id, this.listQuery.validStatus).then((response) => {
+            if (response.data.code == 0) {
+              this.$message({
+                type: 'success',
+                message: '移动成功 - ' + response.data.data,
+              });
+            } else {
+              this.$message({
+                type: 'error',
+                message: '移动失败：' + response.data.msg,
+              });
+            }
           });
-      } else {
-        if (row.actualCommissionAmount > 0) {
-          if (row.finalCommissionAmount == undefined || row.finalCommissionAmount == '') {
-            this.$message({
-              type: 'error',
-              message: '最终佣金不能为空',
-            });
-            return;
-          }
-          if (row.userFinalCommissionAmount == undefined || row.userFinalCommissionAmount == '') {
-            this.$message({
-              type: 'error',
-              message: '用户最终佣金不能为空',
-            });
-            return;
-          }
-        }
-
-        orderAudit(row, row.approveOption).then((response) => {
-          console.log('code = ' + response.data.code);
-          if (response.data.code == 0) {
-            this.$message({
-              type: 'success',
-              message: '审核成功: 同意',
-            });
-            this.getList();
-          } else {
-            this.$message({
-              type: 'error',
-              message: '审核失败: 同意',
-            });
-          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消移动',
+          });
         });
-      }
     },
+    /**
+     * 由于版权方要求暂时下架
+     * @param {*} id
+     * @returns
+     */
+    remove(id) {},
+    /**
+     * 真实从数据库里删除
+     * @param {*} id
+     * @returns
+     */
+    del(id) {},
     inputFinalCommissionAmount(row) {
       if (row.finalCommissionAmount > 0) {
         let userFinalCommissionAmount = (row.finalCommissionAmount * row.shareRate) / 100;

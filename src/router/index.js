@@ -195,6 +195,7 @@ export const asyncRoutes = [
         props: (route) => ({
           type: route.query.type,
           isEdit: String(route.query.isEdit).toLowerCase() === 'true',
+          validStatus: route.query.validStatus,
         }),
         meta: {
           title: 'article',

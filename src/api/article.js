@@ -25,6 +25,23 @@ export function getArticle(query) {
   });
 }
 
+export function submitArticle(query) {
+  return service2({
+    url: '/admin/submitArticle',
+
+    method: 'post',
+    data: query,
+  });
+}
+
+export function delArticle(id) {
+  return service2({
+    url: '/admin/delArticle',
+    method: 'post',
+    params: { id },
+  });
+}
+
 export function fetchPv(pv) {
   return request({
     url: '/vue-element-admin/article/pv',
