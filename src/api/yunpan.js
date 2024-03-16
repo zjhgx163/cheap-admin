@@ -26,9 +26,9 @@ export function fetchAuthorInfo(id) {
  * @param {*} id
  * @returns
  */
-export function moveYunpnItem(id, validStatus) {
+export function moveYunpanItem(id, validStatus) {
   return service2({
-    url: '/admin/moveYunpnItem',
+    url: '/admin/moveYunpanItem',
     method: 'post',
     params: { id: id, validStatus: validStatus },
   });
@@ -39,11 +39,11 @@ export function moveYunpnItem(id, validStatus) {
  * @param {*} id
  * @returns
  */
-export function removeYunpanItem(id) {
+export function removeYunpanItem(id, validStatus) {
   return service2({
     url: '/admin/removeYunpanItem',
     method: 'post',
-    params: { id },
+    params: { id: id, validStatus: validStatus },
   });
 }
 /**

@@ -229,7 +229,7 @@
                 circle
                 size="mini"
                 icon="el-icon-remove"
-                @click="move(row.id)"
+                @click="move(row)"
               />
             </el-col>
             <el-col :span="8">
@@ -238,7 +238,7 @@
                 circle
                 size="mini"
                 icon="el-icon-delete"
-                @click="remove(row.id)"
+                @click="remove(row)"
               />
             </el-col>
             <el-col :span="8">
@@ -247,7 +247,7 @@
                 circle
                 size="mini"
                 icon="el-icon-delete-solid"
-                @click="del(row.id)"
+                @click="del(row)"
               />
             </el-col>
           </el-row>
@@ -341,7 +341,7 @@
 <script>
 import { fetchList } from '@/api/yunpan';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
-import { moveYunpnItem, removeYunpnItem, delYunpanItem } from '@/api/yunpan';
+import { moveYunpanItem, removeYunpanItem, delYunpanItem } from '@/api/yunpan';
 
 export default {
   name: 'Yunpan',
@@ -418,14 +418,14 @@ export default {
      * @param {*} id
      * @returns
      */
-    move(id) {
-      this.$confirm('此操作会改变此云盘资源id, 是否继续?', '提示', {
+    move(row) {
+      this.$confirm('此操作会改变此云盘资源:' + row.title + '的id, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
       })
         .then(() => {
-          moveYunpnItem(id, this.listQuery.validStatus).then((response) => {
+          moveYunpanItem(row.id, this.listQuery.validStatus).then((response) => {
             if (response.data.code == 0) {
               this.$message({
                 type: 'success',
@@ -451,7 +451,34 @@ export default {
      * @param {*} id
      * @returns
      */
-    remove(id) {},
+    remove(row) {
+      this.$confirm('此操作会移除此云盘资源:' + row.title + ', 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          removeYunpanItem(row.id, this.listQuery.validStatus).then((response) => {
+            if (response.data.code == 0) {
+              this.$message({
+                type: 'success',
+                message: '移除成功 - ' + response.data.data,
+              });
+            } else {
+              this.$message({
+                type: 'error',
+                message: '移除失败：' + response.data.msg,
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消移除',
+          });
+        });
+    },
     /**
      * 真实从数据库里删除
      * @param {*} id
