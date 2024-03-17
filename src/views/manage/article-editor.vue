@@ -4,22 +4,36 @@
       <sticky :z-index="10" :class-name="'sub-navbar ' + postForm.status">
         <RadioButtonDropDown
           v-model="postForm.isCollection"
-          :labels="[true, false]"
+          :labels="[
+            { value: 1, text: true },
+            { value: 0, text: false },
+          ]"
           title="Is Collections Resource: "
         />
         <RadioButtonDropDown
           v-model="postForm.isBest"
-          :labels="[true, false]"
+          :labels="[
+            { value: 1, text: true },
+            { value: 0, text: false },
+          ]"
           title="Is Best Article: "
         />
         <RadioButtonDropDown
           v-model="postForm.commentDisabled"
-          :labels="['Enable', 'Disable']"
+          :labels="[
+            { value: 1, text: 'Enable' },
+            { value: 0, text: 'Disable' },
+          ]"
           title="Comment: "
         />
         <RadioButtonDropDown
           v-model="postForm.platform"
-          :labels="['yunpan', 'top-article', 'article', 'goods']"
+          :labels="[
+            { value: 1, text: 'yunpan' },
+            { value: 2, text: 'top-article' },
+            { value: 3, text: 'article' },
+            { value: 4, text: 'goods' },
+          ]"
           title="Platform: "
         />
         <KeywordDropdown v-model="postForm.keywords" />
@@ -142,8 +156,8 @@ const defaultForm = {
   image_uri: '', // 文章图片
   // display_time: undefined, // 前台展示时间
   id: undefined,
-  platform: 'yunpan',
-  commentDisabled: 'Enable',
+  platform: 1,
+  commentDisabled: 1,
   isBest: false,
   isCollection: false,
   validStatus: 0,
@@ -240,7 +254,6 @@ export default {
   created() {
     this.setOptions(); // set default select options
     console.log('created');
-    console.log(this.isEdit);
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id;
       this.fetchData({ id: id, type: this.type, validStatus: this.validStatus });
@@ -268,8 +281,8 @@ export default {
             } else {
               this.autherName = response.data.data.auther;
             }
-            this.postForm.platform = 'yunpan';
-            this.postForm.commentDisabled = 'Enabled';
+            this.postForm.platform = 1;
+            this.postForm.commentDisabled = 1;
             this.postForm.validStatus = this.validStatus;
             if (this.postForm.status === -1) {
               this.postForm.status = 'draft';
