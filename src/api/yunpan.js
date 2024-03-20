@@ -51,9 +51,9 @@ export function removeYunpanItem(id, validStatus) {
  * @param {*} id
  * @returns
  */
-export function delYunpanItem(id, validStatus) {
+export function deleteYunpanItem(id, validStatus) {
   return service2({
-    url: '/admin/delYunpanItem',
+    url: '/admin/deleteYunpanItem',
     method: 'post',
     params: { id: id, validStatus: validStatus },
   });

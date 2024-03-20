@@ -341,7 +341,7 @@
 <script>
 import { fetchList } from '@/api/yunpan';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
-import { moveYunpanItem, removeYunpanItem, delYunpanItem } from '@/api/yunpan';
+import { moveYunpanItem, removeYunpanItem, deleteYunpanItem } from '@/api/yunpan';
 
 export default {
   name: 'Yunpan',
@@ -484,7 +484,34 @@ export default {
      * @param {*} id
      * @returns
      */
-    del(id) {},
+    del(row) {
+      this.$confirm('此操作会删除此云盘资源:' + row.title + ', 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          deleteYunpanItem(row.id, this.listQuery.validStatus).then((response) => {
+            if (response.data.code == 0) {
+              this.$message({
+                type: 'success',
+                message: '删除成功 - ' + response.data.data,
+              });
+            } else {
+              this.$message({
+                type: 'error',
+                message: '删除失败：' + response.data.msg,
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除',
+          });
+        });
+    },
     inputFinalCommissionAmount(row) {
       if (row.finalCommissionAmount > 0) {
         let userFinalCommissionAmount = (row.finalCommissionAmount * row.shareRate) / 100;
