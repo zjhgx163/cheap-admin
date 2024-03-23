@@ -225,6 +225,18 @@ export const asyncRoutes = [
           roles: ['admin'], // or you can only set roles in sub nav
         },
       },
+      {
+        path: 'diff/:id',
+        component: () => import('@/views/yunpan/yunpan-diff'),
+        name: 'YunpanItemDiff',
+        props: (route) => ({
+          validStatus: Number(route.query.validStatus),
+        }),
+        meta: {
+          title: 'YunpanItemDiff',
+          roles: ['admin'], // or you can only set roles in sub nav
+        },
+      },
     ],
   },
 

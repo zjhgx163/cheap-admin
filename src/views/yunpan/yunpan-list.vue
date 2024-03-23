@@ -184,27 +184,21 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="标识" width="60" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span>{{ scope.row.dataId }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="标签" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.tag }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="编辑状态" width="150">
+      <el-table-column class-name="status-col" label="编辑状态" width="190">
         <template slot-scope="{ row }">
-          <el-row type="flex" justify="space-between" align="middle">
-            <el-col :span="12">
-              <el-tag :type="row.editStatus | editStatusFilter" size="small" effect="dark">
+          <el-row type="flex" justify="space-between" align="middle" :gutter="3">
+            <el-col :span="8">
+              <el-tag :type="row.editStatus | editStatusFilter" size="mini" effect="dark">
                 {{ row.editStatus | parseEditStatus }}
               </el-tag>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="8">
               <router-link
                 :to="{
                   path: '/manage/article/' + row.id,
@@ -215,6 +209,24 @@
                   编辑
                 </el-button></router-link
               >
+            </el-col>
+            <!-- ${row.id} -->
+            <!-- -->
+            <el-col :span="8">
+              <el-button
+                type="text"
+                size="mini"
+                icon="el-icon-edit"
+                :disabled="row.editStatus < 2"
+                @click="
+                  $router.push({
+                    path: '/yunpan/diff/' + row.id,
+                    query: { validStatus: listQuery.validStatus },
+                  })
+                "
+              >
+                对比
+              </el-button>
             </el-col>
           </el-row>
         </template>
@@ -270,22 +282,11 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <!-- <el-table-column align="center" label="操作" width="120">
+      <el-table-column align="center" label="标识" width="60" show-overflow-tooltip>
         <template slot-scope="scope">
-          <el-select
-            v-model="scope.row.approveOption"
-            placeholder="请选择"
-            :disabled="scope.row.status == 1"
-          >
-            <el-option
-              v-for="item in approveOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+          <span>{{ scope.row.dataId }}</span>
         </template>
-      </el-table-column> -->
+      </el-table-column>
 
       <el-table-column width="140" align="center" label="发布时间">
         <template slot-scope="scope">
@@ -350,7 +351,7 @@ export default {
     //上面的parseTime也是filter
     editStatusFilter(status) {
       const statusMap = {
-        0: 'error',
+        0: 'danger',
         1: 'warning',
         2: 'info',
         3: 'success',

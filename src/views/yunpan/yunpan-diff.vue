@@ -18,110 +18,167 @@
           ]"
           title="Is Best Article: "
         />
-        <RadioButtonDropDown
-          v-model="postForm.commentDisabled"
-          :labels="[
-            { value: 1, text: 'Enable' },
-            { value: 0, text: 'Disable' },
-          ]"
-          title="Comment: "
-        />
-        <RadioButtonDropDown
-          v-model="postForm.platform"
-          :labels="[
-            { value: 1, text: 'yunpan' },
-            { value: 2, text: 'top-article' },
-            { value: 3, text: 'article' },
-            { value: 4, text: 'goods' },
-          ]"
-          title="Platform: "
-        />
+
         <KeywordDropdown v-model="postForm.keywords" />
         <el-button v-loading="loading" style="margin-left: 10px" type="success" @click="submitForm">
           Publish
         </el-button>
-        <el-button v-loading="loading" type="warning" @click="draftForm" :disabled="isEdit">
+        <!-- <el-button v-loading="loading" type="warning" @click="draftForm" :disabled="isEdit">
           Draft
-        </el-button>
+        </el-button> -->
       </sticky>
-
       <div class="createPost-main-container">
-        <el-row>
-          <!-- <Warning /> -->
-
-          <el-col :span="24">
+        <el-row :gutter="15">
+          <el-col :span="12">
+            <el-form-item style="margin-bottom: 40px" prop="title">
+              <MDinput
+                v-model="postForm.titleGpt"
+                :maxlength="100"
+                name="name"
+                required
+                disabled="true"
+              >
+                Title
+              </MDinput>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item style="margin-bottom: 40px" prop="titleGpt">
               <MDinput v-model="postForm.titleGpt" :maxlength="100" name="name" required>
                 Title
               </MDinput>
             </el-form-item>
-
-            <div class="postInfo-container">
-              <el-row>
-                <el-col :span="4">
-                  <el-form-item label-width="60px" label="Author:" class="postInfo-container-item">
-                    <el-select
-                      :disabled="isEdit"
-                      v-model="postForm.autherMixId"
-                      :remote-method="searchUser"
-                      filterable
-                      default-first-option
-                      remote
-                      clearable
-                      :placeholder="autherName"
-                    >
-                      <el-option
-                        style="margin-bottom: 5px"
-                        v-for="(item, index) in userListOptions"
-                        :key="item.id + index"
-                        :label="item.name"
-                        :value="item.id"
-                      >
-                        <span style="float: left">{{ item.name }}</span>
-                        <span style="float: right; color: #8492a6; font-size: 13px">
-                          <el-avatar :src="item.avatar" size="small"></el-avatar
-                        ></span>
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="6">
-                  <el-form-item style="margin-bottom: 40px" label-width="70px" label="片名:">
-                    <el-input v-model="postForm.worksName" placeholder="Please enter the content" />
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="4">
-                  <el-form-item
-                    label-width="90px"
-                    label="标签:"
-                    class="postInfo-container-item"
-                    prop="tag"
+          </el-col>
+        </el-row>
+        <el-row :gutter="15">
+          <el-col :span="12">
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label-width="60px" label="Author:" class="postInfo-container-item">
+                  <el-select
+                    disabled
+                    v-model="autherName"
+                    :remote-method="searchUser"
+                    filterable
+                    default-first-option
+                    remote
+                    clearable
+                    :placeholder="autherName"
                   >
-                    <el-select
-                      v-model="postForm.tag"
-                      default-first-option
-                      placeholder="标签"
-                      :disabled="isEdit"
+                    <el-option
+                      style="margin-bottom: 5px"
+                      v-for="(item, index) in userListOptions"
+                      :key="item.id + index"
+                      :label="item.name"
+                      :value="item.id"
                     >
-                      <el-option
-                        v-for="item in tagOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </div>
+                      <span style="float: left">{{ item.name }}</span>
+                      <span style="float: right; color: #8492a6; font-size: 13px">
+                        <el-avatar :src="item.avatar" size="small"></el-avatar
+                      ></span>
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+
+              <!-- <el-col :span="10">
+                <el-form-item style="margin-bottom: 40px" label-width="70px" label="片名:">
+                  <el-input v-model="postForm.worksName" placeholder="Please enter the content" />
+                </el-form-item>
+              </el-col> -->
+
+              <el-col :span="8">
+                <el-form-item label-width="90px" label="标签:" class="postInfo-container-item">
+                  <el-select
+                    v-model="postForm.tag"
+                    default-first-option
+                    placeholder="标签"
+                    disabled
+                  >
+                    <el-option
+                      v-for="item in tagOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-col>
+
+          <el-col :span="12">
+            <el-row>
+              <el-col :span="8">
+                <el-form-item label-width="60px" label="Author:" class="postInfo-container-item">
+                  <el-select
+                    :disabled="isEdit"
+                    v-model="postForm.autherMixId"
+                    :remote-method="searchUser"
+                    filterable
+                    default-first-option
+                    remote
+                    clearable
+                    :placeholder="autherName"
+                  >
+                    <el-option
+                      style="margin-bottom: 5px"
+                      v-for="(item, index) in userListOptions"
+                      :key="item.id + index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                      <span style="float: left">{{ item.name }}</span>
+                      <span style="float: right; color: #8492a6; font-size: 13px">
+                        <el-avatar :src="item.avatar" size="small"></el-avatar
+                      ></span>
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="10">
+                <el-form-item style="margin-bottom: 40px" label-width="70px" label="片名:">
+                  <el-input v-model="postForm.worksName" placeholder="Please enter the content" />
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="6">
+                <el-form-item
+                  label-width="90px"
+                  label="标签:"
+                  class="postInfo-container-item"
+                  prop="tag"
+                >
+                  <el-select
+                    v-model="postForm.tag"
+                    default-first-option
+                    placeholder="标签"
+                    :disabled="isEdit"
+                  >
+                    <el-option
+                      v-for="item in tagOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-col>
         </el-row>
 
-        <el-form-item prop="contentGpt" style="margin-bottom: 30px">
-          <Tinymce ref="editor" v-model="postForm.contentGpt" :height="400" />
-        </el-form-item>
+        <el-row :gutter="15">
+          <el-col :span="12">
+            <el-form-item prop="contentGpt" style="margin-bottom: 30px">
+              <Tinymce ref="editor" v-model="postForm.content" :height="400" /> </el-form-item
+          ></el-col>
+          <el-col :span="12">
+            <el-form-item prop="contentGpt" style="margin-bottom: 30px">
+              <Tinymce ref="editor" v-model="postForm.contentGpt" :height="400" /> </el-form-item
+          ></el-col>
+        </el-row>
         <el-button type="text" size="mini" icon="el-icon-edit"> 显示回复 </el-button>
 
         <!-- <el-form-item prop="image_uri" style="margin-bottom: 30px">
@@ -129,18 +186,6 @@
         </el-form-item> -->
       </div>
     </el-form>
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      border
-      tooltip-effect="light"
-      fit
-      highlight-current-row
-      style="width: 100%; padding: 40px 45px 20px 50px"
-      stripe
-    >
-      <el-table-column type="selection" width="40"> </el-table-column>
-    </el-table>
   </div>
 </template>
 
@@ -148,29 +193,29 @@
 import Tinymce from '@/components/Tinymce';
 // import Upload from '@/components/Upload/SingleImage3';
 import MDinput from '@/components/MDinput';
-import Sticky from '@/components/Sticky'; // 粘性header组件
-import { validURL } from '@/utils/validate';
+// import { validURL } from '@/utils/validate';
 import { getArticle, submitArticle } from '@/api/article';
 import { searchUser } from '@/api/remote-search';
+import Sticky from '@/components/Sticky'; // 粘性header组件
+import { RadioButtonDropDown, KeywordDropdown } from '../manage/components/Dropdown';
 
 import { fetchRandomAutherList, fetchAuthorInfo } from '@/api/yunpan';
-import Warning from '../example/components/Warning';
-import { RadioButtonDropDown, KeywordDropdown } from './components/Dropdown';
 
 const defaultForm = {
-  status: 'draft',
+  status: 'published',
   autherMixId: null,
+  platform: 1,
   auther: null,
   tag: '',
+  title: '',
   titleGpt: '', // 文章题目
+  content: '',
   contentGpt: '', // 文章内容
   worksName: '', // 文章摘要
   keywords: '', // 关键词
   image_uri: '', // 文章图片
   // display_time: undefined, // 前台展示时间
   id: undefined,
-  platform: 1,
-  commentDisabled: 1,
   isBest: false,
   isCollection: false,
   validStatus: 0,
@@ -182,9 +227,7 @@ export default {
   components: {
     Tinymce,
     MDinput,
-    // Upload,
     Sticky,
-    // Warning,
     RadioButtonDropDown,
     KeywordDropdown,
   },
@@ -193,9 +236,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    type: {
-      type: String,
-    },
+
     validStatus: {
       type: Number,
     },
@@ -212,21 +253,7 @@ export default {
         callback();
       }
     };
-    const validateSourceUri = (rule, value, callback) => {
-      if (value) {
-        if (validURL(value)) {
-          callback();
-        } else {
-          this.$message({
-            message: '外链url填写不正确',
-            type: 'error',
-          });
-          callback(new Error('外链url填写不正确'));
-        }
-      } else {
-        callback();
-      }
-    };
+
     return {
       postForm: Object.assign({}, defaultForm),
       loading: false,
@@ -268,12 +295,14 @@ export default {
   created() {
     this.setOptions(); // set default select options
     console.log('created');
-    if (this.isEdit) {
-      const id = this.$route.params && this.$route.params.id;
-      this.fetchData({ id: id, type: this.type, validStatus: this.validStatus });
-    } else {
-      this.getRandomUserList();
-    }
+    const id = this.$route.params && this.$route.params.id;
+
+    this.fetchData({ id: id, type: 'yunpan', validStatus: this.validStatus });
+
+    // if (this.isEdit) {
+    // } else {
+    //   this.getRandomUserList();
+    // }
 
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
@@ -292,17 +321,11 @@ export default {
             this.postForm = response.data.data;
             if (response.data.data.autherMixId != null && response.data.data.autherMixId > 0) {
               this.getAutherInfo(response.data.data.autherMixId);
-            } else {
-              this.autherName = response.data.data.auther;
             }
+            this.autherName = response.data.data.auther;
             this.postForm.platform = 1;
-            this.postForm.commentDisabled = 1;
+
             this.postForm.validStatus = this.validStatus;
-            if (this.postForm.status === -1) {
-              this.postForm.status = 'draft';
-            } else {
-              this.postForm.status = 'published';
-            }
 
             // just for test
             // this.postForm.title += `   Article Id:${this.postForm.id}`;
@@ -350,7 +373,6 @@ export default {
                 type: 'success',
                 duration: 2000,
               });
-              this.postForm.status = 'published';
               setTimeout(() => {
                 this.$router.push({ path: '/yunpan' });
               }, 500);
@@ -409,22 +431,7 @@ export default {
         },
       ];
     },
-    draftForm() {
-      if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
-        this.$message({
-          message: '请填写必要的标题和内容',
-          type: 'warning',
-        });
-        return;
-      }
-      this.$message({
-        message: '保存成功',
-        type: 'success',
-        showClose: true,
-        duration: 1000,
-      });
-      this.postForm.status = 'draft';
-    },
+
     getRandomUserList() {
       fetchRandomAutherList().then((response) => {
         if (!response.data.data) return;
