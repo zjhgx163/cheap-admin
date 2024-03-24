@@ -196,6 +196,7 @@ export const asyncRoutes = [
           type: route.query.type,
           isEdit: String(route.query.isEdit).toLowerCase() === 'true',
           validStatus: Number(route.query.validStatus),
+          editStatus: Number(route.query.editStatus),
         }),
         meta: {
           title: 'article',
@@ -220,6 +221,10 @@ export const asyncRoutes = [
         path: 'list',
         component: () => import('@/views/yunpan/yunpan-list'),
         name: 'YunpanList',
+        props: (route) => ({
+          validStatus: Number(route.query.validStatus),
+          editStatus: Number(route.query.editStatus),
+        }),
         meta: {
           title: 'yunpanList',
           roles: ['admin'], // or you can only set roles in sub nav
@@ -231,6 +236,7 @@ export const asyncRoutes = [
         name: 'YunpanItemDiff',
         props: (route) => ({
           validStatus: Number(route.query.validStatus),
+          editStatus: Number(route.query.editStatus),
         }),
         meta: {
           title: 'YunpanItemDiff',

@@ -202,7 +202,12 @@
               <router-link
                 :to="{
                   path: '/manage/article/' + row.id,
-                  query: { type: 'yunpan', isEdit: true, validStatus: listQuery.validStatus },
+                  query: {
+                    type: 'yunpan',
+                    isEdit: true,
+                    validStatus: listQuery.validStatus,
+                    editStatus: listQuery.editStatus,
+                  },
                 }"
               >
                 <el-button type="text" size="mini" icon="el-icon-edit">
@@ -221,7 +226,7 @@
                 @click="
                   $router.push({
                     path: '/yunpan/diff/' + row.id,
-                    query: { validStatus: listQuery.validStatus },
+                    query: { validStatus: listQuery.validStatus, editStatus: listQuery.editStatus },
                   })
                 "
               >
@@ -400,8 +405,26 @@ export default {
       ],
     };
   },
+  props: {
+    editStatus: {
+      type: Number,
+      default: null,
+    },
+    type: {
+      type: String,
+    },
+    validStatus: {
+      type: Number,
+    },
+  },
   created() {
     this.setOptions(); // set default select options
+    if (this.editStatus != null && !isNaN(this.editStatus)) {
+      this.listQuery.editStatus = this.editStatus;
+    }
+    if (this.validStatus != null && !isNaN(this.validStatus)) {
+      this.listQuery.validStatus = this.validStatus;
+    }
     this.getList();
   },
   methods: {

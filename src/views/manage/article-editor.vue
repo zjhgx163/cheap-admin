@@ -129,7 +129,7 @@
         </el-form-item> -->
       </div>
     </el-form>
-    <el-table
+    <!-- <el-table
       v-loading="listLoading"
       :data="list"
       border
@@ -140,7 +140,7 @@
       stripe
     >
       <el-table-column type="selection" width="40"> </el-table-column>
-    </el-table>
+    </el-table> -->
   </div>
 </template>
 
@@ -197,6 +197,9 @@ export default {
       type: String,
     },
     validStatus: {
+      type: Number,
+    },
+    editStatus: {
       type: Number,
     },
   },
@@ -352,7 +355,10 @@ export default {
               });
               this.postForm.status = 'published';
               setTimeout(() => {
-                this.$router.push({ path: '/yunpan' });
+                this.$router.push({
+                  path: '/yunpan',
+                  query: { validStatus: this.validStatus, editStatus: this.editStatus },
+                });
               }, 500);
             } else {
               this.$notify({

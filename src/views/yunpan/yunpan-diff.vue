@@ -31,13 +31,7 @@
         <el-row :gutter="15">
           <el-col :span="12">
             <el-form-item style="margin-bottom: 40px" prop="title">
-              <MDinput
-                v-model="postForm.titleGpt"
-                :maxlength="100"
-                name="name"
-                required
-                disabled="true"
-              >
+              <MDinput v-model="postForm.title" :maxlength="100" name="name" required disabled>
                 Title
               </MDinput>
             </el-form-item>
@@ -240,6 +234,9 @@ export default {
     validStatus: {
       type: Number,
     },
+    editStatus: {
+      type: Number,
+    },
   },
   data() {
     const validateRequire = (rule, value, callback) => {
@@ -374,7 +371,10 @@ export default {
                 duration: 2000,
               });
               setTimeout(() => {
-                this.$router.push({ path: '/yunpan' });
+                this.$router.push({
+                  path: '/yunpan',
+                  query: { validStatus: this.validStatus, editStatus: this.editStatus },
+                });
               }, 500);
             } else {
               this.$notify({
