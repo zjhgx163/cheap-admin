@@ -341,13 +341,49 @@
       :limit.sync="listQuery.limit"
       @pagination="getList"
     />
+    <el-form ref="postForm" :model="postForm" :rules="rules" style="margin: 5px 15px 40px 15px">
+      <el-row :gutter="10" align="top" type="flex">
+        <el-col :span="7">
+          <el-form-item label="批量处理" prop="ids">
+            <el-input type="textarea" v-model="postForm.ids" resize="vertical"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-form-item label="有效状态" prop="validStatus">
+            <el-select v-model="postForm.validStatus" clearable placeholder="请选择">
+              <el-option
+                v-for="item in validStatusOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6"> </el-col>
+      </el-row>
+      <el-button
+        size="small"
+        v-loading="loading"
+        style="margin-left: 10px"
+        type="success"
+        @click="batchDelete"
+      >
+        删除
+      </el-button>
+    </el-form>
   </div>
 </template>
 
 <script>
 import { fetchList } from '@/api/yunpan';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
-import { moveYunpanItem, removeYunpanItem, deleteYunpanItem } from '@/api/yunpan';
+import {
+  moveYunpanItem,
+  removeYunpanItem,
+  deleteYunpanItem,
+  batchDeleteYunpanItems,
+} from '@/api/yunpan';
 
 export default {
   name: 'Yunpan',
@@ -374,6 +410,17 @@ export default {
     },
   },
   data() {
+    const validateRequire = (rule, value, callback) => {
+      if (value === '') {
+        this.$message({
+          message: rule.field + '为必传项',
+          type: 'error',
+        });
+        callback(new Error(rule.field + '为必传项'));
+      } else {
+        callback();
+      }
+    };
     return {
       list: null,
       total: 0,
@@ -403,6 +450,17 @@ export default {
           label: '同意',
         },
       ],
+      postForm: {
+        ids: '',
+        validStatus: 1,
+      },
+      rules: {
+        // image_uri: [{ validator: validateRequire }],
+        ids: [{ validator: validateRequire }],
+        validStatus: [{ validator: validateRequire }],
+        // source_uri: [{ validator: validateSourceUri, trigger: 'blur' }],
+      },
+      loading: false,
     };
   },
   props: {
@@ -536,6 +594,36 @@ export default {
           });
         });
     },
+
+    batchDelete() {
+      this.$refs.postForm.validate((valid) => {
+        if (valid) {
+          this.loading = true;
+          batchDeleteYunpanItems(this.postForm).then((response) => {
+            if (response.data.code == 0) {
+              this.$notify({
+                title: '成功',
+                message: '批量删除云盘成功',
+                type: 'success',
+                duration: 2000,
+              });
+              this.postForm.status = 'published';
+            } else {
+              this.$notify({
+                title: '失败',
+                type: 'error',
+                message: '发布失败：' + response.data.msg,
+              });
+            }
+            this.loading = false;
+          });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+
     inputFinalCommissionAmount(row) {
       if (row.finalCommissionAmount > 0) {
         let userFinalCommissionAmount = (row.finalCommissionAmount * row.shareRate) / 100;

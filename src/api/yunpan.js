@@ -58,3 +58,11 @@ export function deleteYunpanItem(id, validStatus) {
     params: { id: id, validStatus: validStatus },
   });
 }
+
+export function batchDeleteYunpanItems(submitVo) {
+  return service2({
+    url: '/admin/batchDeleteYunpanItems',
+    method: 'post',
+    data: submitVo,
+  });
+}
