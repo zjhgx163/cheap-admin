@@ -15,10 +15,15 @@
         </div>
       </el-col>
 
-      <el-col :span="5" :xs="24">
+      <el-col :span="4" :xs="24">
         <div class="block">
           爬取/自有：
-          <el-select v-model="listQuery.source" clearable placeholder="请选择">
+          <el-select
+            v-model="listQuery.source"
+            clearable
+            placeholder="请选择"
+            style="max-width: 50%"
+          >
             <el-option
               v-for="item in sourceOptions"
               :key="item.value"
@@ -29,10 +34,15 @@
         </div>
       </el-col>
 
-      <el-col :span="5" :xs="24">
+      <el-col :span="4" :xs="24">
         <div class="block">
           编辑状态：
-          <el-select v-model="listQuery.editStatus" clearable placeholder="请选择">
+          <el-select
+            v-model="listQuery.editStatus"
+            clearable
+            placeholder="请选择"
+            style="max-width: 50%"
+          >
             <el-option
               v-for="item in editStatusOptions"
               :key="item.value"
@@ -43,12 +53,35 @@
         </div>
       </el-col>
 
-      <el-col :span="5" :xs="24">
+      <el-col :span="4" :xs="24">
         <div class="block">
           有效状态：
-          <el-select v-model="listQuery.validStatus" clearable placeholder="请选择">
+          <el-select
+            v-model="listQuery.validStatus"
+            clearable
+            placeholder="请选择"
+            style="max-width: 50%"
+          >
             <el-option
               v-for="item in validStatusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+      </el-col>
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          搜索引擎：
+          <el-select
+            v-model="listQuery.searchEngineCrawled"
+            clearable
+            placeholder="请选择"
+            style="max-width: 50%"
+          >
+            <el-option
+              v-for="item in searchEngineOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -59,34 +92,24 @@
     </el-row>
 
     <el-row :gutter="1" style="margin: 40px 15px 40px">
-      <el-col :span="5" :xs="24">
+      <el-col :span="4" :xs="24">
         <div class="block">
-          搜索引擎：
-          <el-select v-model="listQuery.searchEngineCrawled" clearable placeholder="请选择">
-            <el-option
-              v-for="item in searchEngineOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </div>
-      </el-col>
-      <el-col :span="6" :xs="24">
-        <div class="block">
-          输入ID：
-          <el-input v-model="listQuery.id" placeholder="ID" style="width: 300px; max-width: 100%" />
+          ID：
+          <el-input v-model="listQuery.id" placeholder="ID" style="max-width: 80%" />
         </div>
       </el-col>
 
       <el-col :span="6" :xs="24">
         <div class="block">
-          关键字：
-          <el-input
-            v-model="listQuery.keyword"
-            placeholder="搜索关键字"
-            style="width: 300px; max-width: 100%"
-          />
+          标题：
+          <el-input v-model="listQuery.title" placeholder="搜索关键字" style="max-width: 80%" />
+        </div>
+      </el-col>
+
+      <el-col :span="6" :xs="24">
+        <div class="block">
+          链接：
+          <el-input v-model="listQuery.yunpanLink" placeholder="url" style="max-width: 80%" />
         </div>
       </el-col>
 
@@ -175,6 +198,14 @@
       <el-table-column align="center" label="混淆楼主" width="90">
         <template slot-scope="scope">
           <span>{{ scope.row.confusedAuther }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="有效状态" width="90">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.validStatus | validStatusFilter" size="mini" effect="dark">
+            {{ scope.row.validStatus | parseValidStatus }}
+          </el-tag>
         </template>
       </el-table-column>
 
@@ -408,6 +439,21 @@ export default {
       };
       return statusMap[status];
     },
+    //上面的parseTime也是filter
+    validStatusFilter(status) {
+      const statusMap = {
+        1: 'success',
+        '-1': 'info',
+      };
+      return statusMap[status];
+    },
+    parseValidStatus(status) {
+      const statusMap = {
+        1: '有效',
+        '-1': '失效',
+      };
+      return statusMap[status];
+    },
   },
   data() {
     const validateRequire = (rule, value, callback) => {
@@ -435,6 +481,8 @@ export default {
         dateRange: null,
         id: '',
         keyword: '',
+        title: '',
+        yunpanLink: '',
       },
       sourceOptions: [],
       editStatusOptions: [],
