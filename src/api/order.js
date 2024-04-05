@@ -7,6 +7,14 @@ export function fetchList(query) {
   });
 }
 
+export function retrieveOrder(query) {
+  return service2({
+    url: '/admin/retrieveOrder',
+    method: 'post',
+    data: query,
+  });
+}
+
 export function orderAudit(row, auditOption) {
   return service2({
     url: '/admin/order/audit',

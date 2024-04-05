@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row :gutter="5" style="margin: 40px 15px 40px">
-      <el-col :span="7" :xs="24">
+      <el-col :span="6" :xs="24">
         <div class="block">
           日期选择：
           <el-date-picker
@@ -11,6 +11,7 @@
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            style="max-width: 70%"
           />
         </div>
       </el-col>
@@ -28,10 +29,10 @@
           </el-select>
         </div>
       </el-col>
-      <el-col :span="4" :xs="24">
+      <el-col :span="3" :xs="24">
         <div class="block">
           商城：
-          <el-select v-model="listQuery.mall" clearable placeholder="请选择">
+          <el-select v-model="listQuery.mall" clearable placeholder="请选择" style="max-width: 60%">
             <el-option
               v-for="item in mallOptions"
               :key="item.value"
@@ -42,10 +43,15 @@
         </div>
       </el-col>
 
-      <el-col :span="5" :xs="24">
+      <el-col :span="3" :xs="24">
         <div class="block">
           结算状态：
-          <el-select v-model="listQuery.status" clearable placeholder="请选择">
+          <el-select
+            v-model="listQuery.status"
+            clearable
+            placeholder="请选择"
+            style="max-width: 50%"
+          >
             <el-option
               v-for="item in auditOptions"
               :key="item.value"
@@ -55,21 +61,66 @@
           </el-select>
         </div>
       </el-col>
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          邀请码：
+          <el-input v-model="listQuery.inviteCode" placeholder="邀请码" style="max-width: 60%" />
+        </div>
+      </el-col>
+      <el-col :span="2" :xs="24">
+        <div class="block">
+          <el-button type="primary" @click.prevent.stop="getList"> 查询 </el-button>
+        </div>
+      </el-col>
     </el-row>
     <el-row style="margin: 40px 15px 40px">
       <el-col :span="4" :xs="24">
         <div class="block">
-          邀请码：
-          <el-input
-            v-model="listQuery.inviteCode"
-            placeholder="邀请码"
-            style="width: 160px; max-width: 100%"
+          日期：
+          <el-date-picker
+            v-model="retrieveQuery.date"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            :placeholder="选择日期"
+            type="date"
+            style="max-width: 70%"
           />
+        </div>
+      </el-col>
+      <el-col :span="7" :xs="24">
+        <div class="block">
+          时间范围：
+          <el-time-picker
+            is-range
+            v-model="retrieveQuery.timeRange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+          >
+          </el-time-picker>
         </div>
       </el-col>
       <el-col :span="3" :xs="24">
         <div class="block">
-          <el-button type="primary" @click.prevent.stop="getList"> 查询 </el-button>
+          商城：
+          <el-select
+            v-model="retrieveQuery.mall"
+            clearable
+            placeholder="请选择"
+            style="max-width: 60%"
+          >
+            <el-option
+              v-for="item in mallOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+      </el-col>
+      <el-col :span="7" :xs="24">
+        <div class="block">
+          <el-button type="primary" @click.prevent.stop="retrieveOrder"> 找回订单</el-button>
         </div>
       </el-col>
     </el-row>
@@ -281,7 +332,7 @@
 </template>
 
 <script>
-import { fetchList, orderAudit } from '@/api/order';
+import { fetchList, orderAudit, retrieveOrder } from '@/api/order';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 
 export default {
@@ -343,6 +394,11 @@ export default {
         inviteCode: null,
         dateRange: [new Date().setDate(new Date().getDate() - 7), new Date()],
       },
+      retrieveQuery: {
+        date: new Date(),
+        timeRange: [new Date(2026, 9, 10, 8, 40), new Date(2026, 9, 10, 9, 40)],
+        mall: 2,
+      },
       options: [],
       auditOptions: [],
       mallOptions: [],
@@ -369,6 +425,24 @@ export default {
         console.log('records = ' + response.data.data.records);
         this.list = response.data.data.records;
         this.total = Number(response.data.data.total);
+        this.listLoading = false;
+      });
+    },
+    retrieveOrder() {
+      this.listLoading = true;
+      retrieveOrder(this.retrieveQuery).then((response) => {
+        if (response.data.code == 0) {
+          this.list = response.data.data;
+          if (this.list != null) {
+            this.total = Number(this.list.length);
+          }
+        } else {
+          this.$message({
+            type: 'error',
+            message: '取回订单失败' + response.data.msg,
+          });
+        }
+
         this.listLoading = false;
       });
     },
