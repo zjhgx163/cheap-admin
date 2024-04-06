@@ -41,7 +41,7 @@
             v-model="listQuery.editStatus"
             clearable
             placeholder="请选择"
-            style="max-width: 50%"
+            style="max-width: 60%"
           >
             <el-option
               v-for="item in editStatusOptions"
@@ -56,12 +56,7 @@
       <el-col :span="4" :xs="24">
         <div class="block">
           有效状态：
-          <el-select
-            v-model="listQuery.validStatus"
-            clearable
-            placeholder="请选择"
-            style="max-width: 50%"
-          >
+          <el-select v-model="listQuery.validStatus" placeholder="请选择" style="max-width: 50%">
             <el-option
               v-for="item in validStatusOptions"
               :key="item.value"
@@ -113,7 +108,14 @@
         </div>
       </el-col>
 
-      <el-col :span="4" :xs="24">
+      <el-col :span="5" :xs="24">
+        <div class="block">
+          关键词：
+          <el-input v-model="listQuery.keyword" placeholder="url" style="max-width: 70%" />
+        </div>
+      </el-col>
+
+      <el-col :span="3" :xs="24">
         <div class="block">
           <el-button type="primary" @click.prevent.stop="getList"> 查询 </el-button>
         </div>
@@ -121,6 +123,19 @@
     </el-row>
 
     <el-row :gutter="1" style="margin: 40px 15px 40px">
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          请选中两条
+          <el-button
+            type="primary"
+            @click.prevent.stop="compare"
+            icon="el-icon-s-check"
+            size="small"
+          >
+            比对
+          </el-button>
+        </div>
+      </el-col>
       <el-col :span="6" :xs="24">
         <div class="block">
           替换链接
@@ -134,7 +149,9 @@
 
       <el-col :span="4" :xs="24">
         <div class="block">
-          <el-button type="primary" @click.prevent.stop="replaceLinks"> 执行 </el-button>
+          <el-button type="primary" @click.prevent.stop="replaceLinks" size="small">
+            执行
+          </el-button>
         </div>
       </el-col></el-row
     >
@@ -148,6 +165,7 @@
       highlight-current-row
       style="width: 100%"
       stripe
+      @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="40"> </el-table-column>
 
@@ -302,6 +320,31 @@
         </template>
       </el-table-column>
 
+      <el-table-column class-name="status-col" label="使有效/失效" width="100">
+        <template slot-scope="{ row }">
+          <el-row type="flex" justify="space-around" align="middle">
+            <el-col :span="8">
+              <el-button
+                type="info"
+                circle
+                size="mini"
+                icon="el-icon-document-remove"
+                @click="makeInvalid(row)"
+              />
+            </el-col>
+            <el-col :span="8">
+              <el-button
+                type="success"
+                circle
+                size="mini"
+                icon="el-icon-document-add"
+                @click="makeValid(row)"
+              />
+            </el-col>
+          </el-row>
+        </template>
+      </el-table-column>
+
       <el-table-column width="160" align="center" label="链接" show-overflow-tooltip>
         <template slot-scope="scope">
           <el-tooltip
@@ -414,6 +457,8 @@ import {
   removeYunpanItem,
   deleteYunpanItem,
   batchDeleteYunpanItems,
+  makeInvalid,
+  makeValid,
 } from '@/api/yunpan';
 
 export default {
@@ -425,8 +470,9 @@ export default {
       const statusMap = {
         0: 'danger',
         1: 'warning',
-        2: 'info',
+        2: '',
         3: 'success',
+        '-1': 'info',
       };
       return statusMap[status];
     },
@@ -436,6 +482,7 @@ export default {
         1: 'gpt编辑1',
         2: 'gpt编辑2',
         3: '人工编辑',
+        '-1': 'gpt编辑失败',
       };
       return statusMap[status];
     },
@@ -509,6 +556,7 @@ export default {
         // source_uri: [{ validator: validateSourceUri, trigger: 'blur' }],
       },
       loading: false,
+      multipleSelection: [],
     };
   },
   props: {
@@ -643,6 +691,86 @@ export default {
         });
     },
 
+    makeInvalid(row) {
+      this.$confirm('此操作会使此资源处于失效:' + row.title + ', 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          makeInvalid(row.id).then((response) => {
+            if (response.data.code == 0) {
+              this.$message({
+                type: 'success',
+                message: '设置成invalid成功 - ' + response.data.data,
+              });
+            } else {
+              this.$message({
+                type: 'error',
+                message: '设置成invalid失败：' + response.data.msg,
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除',
+          });
+        });
+    },
+
+    makeValid(row) {
+      this.$confirm('此操作会使此资源处于有效:' + row.title + ', 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          makeValid(row.id).then((response) => {
+            if (response.data.code == 0) {
+              this.$message({
+                type: 'success',
+                message: '设置成Valid成功 - ' + response.data.data,
+              });
+            } else {
+              this.$message({
+                type: 'error',
+                message: '设置成Valid失败：' + response.data.msg,
+              });
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除',
+          });
+        });
+    },
+
+    compare() {
+      if (this.multipleSelection.length != 2) {
+        this.$message({
+          type: 'error',
+          message: `请选中两条记录`,
+        });
+        return;
+      }
+      this.$router.push({
+        path: '/yunpan/diff/' + this.multipleSelection[0].id,
+        query: {
+          validStatus: this.listQuery.validStatus,
+          editStatus: this.listQuery.editStatus,
+          compareId: this.multipleSelection[1].id,
+        },
+      });
+    },
+
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+
     batchDelete() {
       this.$refs.postForm.validate((valid) => {
         if (valid) {
@@ -713,6 +841,10 @@ export default {
         {
           value: 3,
           label: '人工编辑',
+        },
+        {
+          value: -1,
+          label: 'gpt编辑失败',
         },
       ];
       this.validStatusOptions = [

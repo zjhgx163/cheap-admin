@@ -58,11 +58,41 @@ export function deleteYunpanItem(id, validStatus) {
     params: { id: id, validStatus: validStatus },
   });
 }
-
+/**
+ *
+ * @param {*} submitVo
+ * @returns
+ */
 export function batchDeleteYunpanItems(submitVo) {
   return service2({
     url: '/admin/batchDeleteYunpanItems',
     method: 'post',
     data: submitVo,
+  });
+}
+
+/**
+ * 把yunpanItem item设置为失效
+ * @param {*} id
+ * @returns
+ */
+export function makeInvalid(id) {
+  return service2({
+    url: '/admin/makeYunpanInvalid',
+    method: 'post',
+    params: { id: id },
+  });
+}
+
+/**
+ * 把yunpanItemInvalid item设置为有效
+ * @param {*} id
+ * @returns
+ */
+export function makeValid(id) {
+  return service2({
+    url: '/admin/makeYunpanValid',
+    method: 'post',
+    params: { id: id },
   });
 }
