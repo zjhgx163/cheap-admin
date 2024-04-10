@@ -758,10 +758,12 @@ export default {
         return;
       }
       this.$router.push({
-        path: '/yunpan/diff/' + this.multipleSelection[0].id,
+        path: '/yunpan/compare/' + this.multipleSelection[0].id,
         query: {
-          validStatus: this.listQuery.validStatus,
-          editStatus: this.listQuery.editStatus,
+          validStatusOne: this.multipleSelection[0].validStatus,
+          editStatusOne: this.multipleSelection[0].editStatus,
+          validStatusTwo: this.multipleSelection[1].validStatus,
+          editStatusTwo: this.multipleSelection[1].editStatus,
           compareId: this.multipleSelection[1].id,
         },
       });

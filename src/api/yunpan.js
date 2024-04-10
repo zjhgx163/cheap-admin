@@ -96,3 +96,11 @@ export function makeValid(id) {
     params: { id: id },
   });
 }
+
+export function getCompareYunpanItems(query) {
+  return service2({
+    url: '/admin/getCompareYunpanItems',
+    method: 'post',
+    data: query,
+  });
+}

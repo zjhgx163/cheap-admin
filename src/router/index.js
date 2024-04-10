@@ -243,6 +243,22 @@ export const asyncRoutes = [
           roles: ['admin'], // or you can only set roles in sub nav
         },
       },
+      {
+        path: 'compare/:id',
+        component: () => import('@/views/yunpan/yunpan-compare'),
+        name: 'YunpanItemCompare',
+        props: (route) => ({
+          validStatusOne: Number(route.query.validStatusOne),
+          editStatusOne: Number(route.query.editStatusOne),
+          validStatusTwo: Number(route.query.validStatusTwo),
+          editStatusTwo: Number(route.query.editStatusTwo),
+          compareId: route.query.compareId,
+        }),
+        meta: {
+          title: 'YunpanItemDiff',
+          roles: ['admin'], // or you can only set roles in sub nav
+        },
+      },
     ],
   },
 
