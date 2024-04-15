@@ -111,7 +111,7 @@
       <el-col :span="5" :xs="24">
         <div class="block">
           关键词：
-          <el-input v-model="listQuery.keyword" placeholder="url" style="max-width: 70%" />
+          <el-input v-model="listQuery.keyword" placeholder="keyword" style="max-width: 70%" />
         </div>
       </el-col>
 
@@ -122,8 +122,8 @@
       </el-col>
     </el-row>
 
-    <el-row :gutter="1" style="margin: 40px 15px 40px">
-      <el-col :span="4" :xs="24">
+    <el-row :gutter="1" style="margin: 40px 15px 40px" align="top" type="flex">
+      <el-col :span="3" :xs="24">
         <div class="block">
           请选中两条
           <el-button
@@ -136,21 +136,27 @@
           </el-button>
         </div>
       </el-col>
-      <el-col :span="6" :xs="24">
-        <div class="block">
-          替换链接
+      <el-col :span="5" :xs="24">
+        <div>
           <el-input
-            v-model="listQuery.keyword"
+            label="替换"
+            type="textarea"
+            v-model="myLinks"
             placeholder="替换链接"
             style="width: 300px; max-width: 100%"
           />
         </div>
       </el-col>
 
-      <el-col :span="4" :xs="24">
+      <el-col :span="2" :xs="24">
         <div class="block">
-          <el-button type="primary" @click.prevent.stop="replaceLinks" size="small">
-            执行
+          <el-button
+            type="primary"
+            @click.prevent.stop="replaceLinks"
+            size="small"
+            v-loading="replaceLinksLoading"
+          >
+            链接替换
           </el-button>
         </div>
       </el-col></el-row
@@ -195,47 +201,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="头像" width="75">
-        <template slot-scope="scope">
-          <el-avatar :src="scope.row.avatar"></el-avatar>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="楼主" width="90">
-        <template slot-scope="scope">
-          <span>{{ scope.row.auther }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="混淆头像" width="85">
-        <template slot-scope="scope">
-          <el-avatar :src="scope.row.confusedAvatar"></el-avatar>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="混淆楼主" width="90">
-        <template slot-scope="scope">
-          <span>{{ scope.row.confusedAuther }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="有效状态" width="90">
         <template slot-scope="scope">
           <el-tag :type="scope.row.validStatus | validStatusFilter" size="mini" effect="dark">
             {{ scope.row.validStatus | parseValidStatus }}
           </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="来源" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.source }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="标签" width="60">
-        <template slot-scope="scope">
-          <span>{{ scope.row.tag }}</span>
         </template>
       </el-table-column>
 
@@ -357,8 +327,43 @@
             "
             placement="top-start"
           >
-            <span>{{ scope.row.yunpanLinks }}</span>
+            <a class="link-type"> {{ scope.row.yunpanLinks }}</a>
+            <!-- <span>{{ scope.row.yunpanLinks }}</span> -->
           </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="头像" width="75">
+        <template slot-scope="scope">
+          <el-avatar :src="scope.row.avatar"></el-avatar>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="楼主" width="90">
+        <template slot-scope="scope">
+          <span>{{ scope.row.auther }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="混淆头像" width="85">
+        <template slot-scope="scope">
+          <el-avatar :src="scope.row.confusedAvatar"></el-avatar>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="混淆楼主" width="90">
+        <template slot-scope="scope">
+          <span>{{ scope.row.confusedAuther }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="来源" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.source }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="标签" width="60">
+        <template slot-scope="scope">
+          <span>{{ scope.row.tag }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="标识" width="60" show-overflow-tooltip>
@@ -459,6 +464,7 @@ import {
   batchDeleteYunpanItems,
   makeInvalid,
   makeValid,
+  replaceYunpanLinks,
 } from '@/api/yunpan';
 
 export default {
@@ -557,6 +563,8 @@ export default {
       },
       loading: false,
       multipleSelection: [],
+      myLinks: '',
+      replaceLinksLoading: false,
     };
   },
   props: {
@@ -766,6 +774,35 @@ export default {
           editStatusTwo: this.multipleSelection[1].editStatus,
           compareId: this.multipleSelection[1].id,
         },
+      });
+    },
+
+    replaceLinks() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'error',
+          message: `未选`,
+        });
+        return;
+      }
+      this.replaceLinksLoading = true;
+      const queryArray = this.multipleSelection.map((yunpan) => ({
+        id: yunpan.id,
+        validStatus: yunpan.validStatus,
+      }));
+      replaceYunpanLinks(this.myLinks, queryArray).then((response) => {
+        if (response.data.code == 0) {
+          this.$message({
+            type: 'success',
+            message: 'replaceYunpanLinks成功',
+          });
+        } else {
+          this.$message({
+            type: 'error',
+            message: 'replaceYunpanLinks失败：' + response.data.msg,
+          });
+        }
+        this.replaceLinksLoading = false;
       });
     },
 

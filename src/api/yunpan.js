@@ -104,3 +104,11 @@ export function getCompareYunpanItems(query) {
     data: query,
   });
 }
+
+export function replaceYunpanLinks(myLinks, queryArray) {
+  return service2({
+    url: '/admin/replaceYunpanLinks',
+    method: 'post',
+    data: { myLinks: myLinks, yunpanItems: queryArray },
+  });
+}
