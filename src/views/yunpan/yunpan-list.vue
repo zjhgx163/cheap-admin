@@ -611,7 +611,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          moveYunpanItem(row.id, this.listQuery.validStatus).then((response) => {
+          moveYunpanItem(row.id, row.validStatus).then((response) => {
             if (response.data.code == 0) {
               this.$message({
                 type: 'success',
@@ -644,7 +644,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          removeYunpanItem(row.id, this.listQuery.validStatus).then((response) => {
+          removeYunpanItem(row.id, row.validStatus).then((response) => {
             if (response.data.code == 0) {
               this.$message({
                 type: 'success',
@@ -677,7 +677,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          deleteYunpanItem(row.id, this.listQuery.validStatus).then((response) => {
+          deleteYunpanItem(row.id, row.validStatus).then((response) => {
             if (response.data.code == 0) {
               this.$message({
                 type: 'success',
