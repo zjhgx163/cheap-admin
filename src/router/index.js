@@ -255,7 +255,7 @@ export const asyncRoutes = [
           compareId: route.query.compareId,
         }),
         meta: {
-          title: 'YunpanItemDiff',
+          title: 'YunpanItemCompare',
           roles: ['admin'], // or you can only set roles in sub nav
         },
       },
