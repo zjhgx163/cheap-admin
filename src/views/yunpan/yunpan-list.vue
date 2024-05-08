@@ -444,6 +444,7 @@
             <el-upload
               class="upload-demo"
               :action="baiduStaticsHandlerURL"
+              :on-success="handleSuccess"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
               :before-remove="beforeRemove"
@@ -584,6 +585,7 @@ export default {
       myLinks: '',
       replaceLinksLoading: false,
       baiduStaticsHandlerURL: process.env.VUE_APP_BASE_API2 + '/admin/baidustatics/upload',
+      fileList: [],
     };
   },
   props: {
@@ -856,6 +858,27 @@ export default {
           return false;
         }
       });
+    },
+    handleSuccess(response) {
+      console.log(response);
+      this.$message({
+        type: 'success',
+        message: `${response.data.name} 上传成功`,
+      });
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`
+      );
     },
 
     inputFinalCommissionAmount(row) {
