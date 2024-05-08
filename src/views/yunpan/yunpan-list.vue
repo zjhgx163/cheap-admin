@@ -224,8 +224,8 @@
                   query: {
                     type: 'yunpan',
                     isEdit: true,
-                    validStatus: listQuery.validStatus,
-                    editStatus: listQuery.editStatus,
+                    validStatus: row.validStatus,
+                    editStatus: row.editStatus,
                   },
                 }"
               >
@@ -245,7 +245,7 @@
                 @click="
                   $router.push({
                     path: '/yunpan/diff/' + row.id,
-                    query: { validStatus: listQuery.validStatus, editStatus: listQuery.editStatus },
+                    query: { validStatus: row.validStatus, editStatus: row.editStatus },
                   })
                 "
               >
@@ -439,7 +439,25 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="6"> </el-col>
+        <el-col :span="6">
+          <el-form-item label="Baidu统计分析" prop="ids">
+            <el-upload
+              class="upload-demo"
+              :action="baiduStaticsHandlerURL"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              accept=".csv"
+              multiple
+              :limit="3"
+              :on-exceed="handleExceed"
+              :file-list="fileList"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传csv文件</div>
+            </el-upload></el-form-item
+          ></el-col
+        >
       </el-row>
       <el-button
         size="small"
@@ -565,6 +583,7 @@ export default {
       multipleSelection: [],
       myLinks: '',
       replaceLinksLoading: false,
+      baiduStaticsHandlerURL: process.env.VUE_APP_BASE_API2 + '/admin/baidustatics/upload',
     };
   },
   props: {
