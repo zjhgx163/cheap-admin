@@ -171,8 +171,8 @@ const defaultForm = {
   id: undefined,
   platform: 1,
   commentDisabled: 1,
-  isBest: false,
-  isCollection: false,
+  isBest: 0,
+  isCollection: 0,
   validStatus: 0,
   // importance: 0,
 };
