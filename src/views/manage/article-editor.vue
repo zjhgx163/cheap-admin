@@ -61,7 +61,7 @@
                 <el-col :span="4">
                   <el-form-item label-width="60px" label="Author:" class="postInfo-container-item">
                     <el-select
-                      :disabled="isEdit"
+                      :disabled="isEdit && isCrawl"
                       v-model="postForm.autherMixId"
                       :remote-method="searchUser"
                       filterable
@@ -245,6 +245,7 @@ export default {
       tagOptions: [],
       autherName: '',
       listLoading: false,
+      isCrawl: true,
     };
   },
   computed: {
@@ -305,6 +306,10 @@ export default {
               this.postForm.status = 'draft';
             } else {
               this.postForm.status = 'published';
+            }
+            if (response.data.data.source == 'self') {
+              this.isCrawl = false;
+              this.getRandomUserList();
             }
 
             // just for test
