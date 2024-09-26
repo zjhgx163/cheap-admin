@@ -58,6 +58,35 @@ export function deleteYunpanItem(id, validStatus) {
     params: { id: id, validStatus: validStatus },
   });
 }
+
+/**
+ * 真实从数据库里删除
+ * @param {*} id
+ * @returns
+ */
+export function deleteMultipleYunpanItems(list) {
+  return service2({
+    url: '/admin/deleteMultipleYunpanItems',
+    method: 'post',
+    params: { idList: list },
+    paramsSerializer: (params) => parseParams(params),
+  });
+}
+
+/**
+ * 软删除设置deleted=-1
+ * @param {*} id
+ * @returns
+ */
+export function removeMultipleYunpanItems(list) {
+  return service2({
+    url: '/admin/removeMultipleYunpanItems',
+    method: 'post',
+    params: { idList: list },
+    paramsSerializer: (params) => parseParams(params),
+  });
+}
+
 /**
  *
  * @param {*} submitVo
@@ -111,4 +140,28 @@ export function replaceYunpanLinks(myLinks, queryArray) {
     method: 'post',
     data: { myLinks: myLinks, yunpanItems: queryArray },
   });
+}
+
+export function fetchSpiderPageList(query) {
+  return service2({
+    url: '/admin/spiderPageList',
+    method: 'post',
+    data: query,
+  });
+}
+
+function parseParams(params) {
+  let options = '';
+
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      for (const element of value) {
+        options += `${key}=${element}&`;
+      }
+    } else {
+      options += `${key}=${value}&`;
+    }
+  }
+
+  return options.slice(0, -1);
 }

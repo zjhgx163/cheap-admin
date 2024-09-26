@@ -1,6 +1,24 @@
 <template>
   <div>
     <el-row :gutter="1" style="margin: 40px 15px 40px">
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          搜索引擎：
+          <el-select
+            v-model="listQuery.searchEngineCrawled"
+            clearable
+            placeholder="请选择"
+            style="max-width: 50%"
+          >
+            <el-option
+              v-for="item in searchEngineOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+      </el-col>
       <el-col :span="7" :xs="24">
         <div class="block">
           日期选择：
@@ -56,7 +74,7 @@
       <el-col :span="4" :xs="24">
         <div class="block">
           有效状态：
-          <el-select v-model="listQuery.validStatus" placeholder="请选择" style="max-width: 50%">
+          <el-select v-model="listQuery.validStatus" placeholder="请选择" style="max-width: 40%">
             <el-option
               v-for="item in validStatusOptions"
               :key="item.value"
@@ -64,12 +82,6 @@
               :value="item.value"
             />
           </el-select>
-        </div>
-      </el-col>
-      <el-col :span="4" :xs="24">
-        <div class="block">
-          作者：
-          <el-input v-model="listQuery.auther" placeholder="作者" style="max-width: 70%" />
         </div>
       </el-col>
     </el-row>
@@ -86,13 +98,6 @@
         <div class="block">
           标题：
           <el-input v-model="listQuery.title" placeholder="搜索关键字" style="max-width: 80%" />
-        </div>
-      </el-col>
-
-      <el-col :span="5" :xs="24">
-        <div class="block">
-          链接：
-          <el-input v-model="listQuery.yunpanLink" placeholder="url" style="max-width: 80%" />
         </div>
       </el-col>
 
@@ -142,38 +147,6 @@
           />
         </div>
       </el-col>
-
-      <el-col :span="2" :xs="24">
-        <div class="block">
-          <el-button
-            type="primary"
-            @click.prevent.stop="replaceLinks"
-            size="small"
-            v-loading="replaceLinksLoading"
-          >
-            链接替换
-          </el-button>
-        </div>
-      </el-col>
-
-      <el-col :span="1" :offset="1" :xs="24">
-        <el-button
-          type="danger"
-          circle
-          size="mini"
-          icon="el-icon-delete-solid"
-          @click="multipleDelete"
-        />
-      </el-col>
-      <el-col :span="1" :xs="24">
-        <el-button
-          type="warning"
-          circle
-          size="mini"
-          icon="el-icon-delete"
-          @click="multipleRemove"
-        />
-      </el-col>
     </el-row>
 
     <el-table
@@ -192,6 +165,12 @@
       <el-table-column width="170" align="center" label="ID">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="140" align="center" label="最后更新时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.lastUpdateDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
@@ -335,23 +314,6 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="160" align="center" label="链接" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <el-tooltip
-            class="item"
-            effect="dark"
-            :content="
-              scope.row.yunpanLinks != null
-                ? scope.row.yunpanLinks.toString()
-                : scope.row.yunpanLinks
-            "
-            placement="top-start"
-          >
-            <a class="link-type"> {{ scope.row.yunpanLinks }}</a>
-            <!-- <span>{{ scope.row.yunpanLinks }}</span> -->
-          </el-tooltip>
-        </template>
-      </el-table-column>
       <el-table-column align="center" label="头像" width="75">
         <template slot-scope="scope">
           <el-avatar :src="scope.row.avatar"></el-avatar>
@@ -364,17 +326,6 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="混淆头像" width="85">
-        <template slot-scope="scope">
-          <el-avatar :src="scope.row.confusedAvatar"></el-avatar>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="混淆楼主" width="90">
-        <template slot-scope="scope">
-          <span>{{ scope.row.confusedAuther }}</span>
-        </template>
-      </el-table-column>
       <el-table-column align="center" label="来源" width="70">
         <template slot-scope="scope">
           <span>{{ scope.row.source }}</span>
@@ -384,23 +335,6 @@
       <el-table-column align="center" label="标签" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.tag }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="标识" width="60" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span>{{ scope.row.dataId }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="140" align="center" label="发布时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.itemCreateDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="140" align="center" label="最后回帖时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.lastPostDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
       <!-- 
@@ -440,72 +374,18 @@
       :limit.sync="listQuery.limit"
       @pagination="getList"
     />
-    <el-form ref="postForm" :model="postForm" :rules="rules" style="margin: 5px 15px 40px 15px">
-      <el-row :gutter="10" align="top" type="flex">
-        <el-col :span="7">
-          <el-form-item label="批量处理" prop="ids">
-            <el-input type="textarea" v-model="postForm.ids" resize="vertical"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-form-item label="有效状态" prop="validStatus">
-            <el-select v-model="postForm.validStatus" clearable placeholder="请选择">
-              <el-option
-                v-for="item in validStatusOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="Baidu统计分析" prop="ids">
-            <el-upload
-              class="upload-demo"
-              :action="baiduStaticsHandlerURL"
-              :on-success="handleSuccess"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :before-remove="beforeRemove"
-              accept=".csv"
-              multiple
-              :limit="3"
-              :on-exceed="handleExceed"
-              :file-list="fileList"
-            >
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传csv文件</div>
-            </el-upload></el-form-item
-          ></el-col
-        >
-      </el-row>
-      <el-button
-        size="small"
-        v-loading="loading"
-        style="margin-left: 10px"
-        type="success"
-        @click="batchDelete"
-      >
-        删除
-      </el-button>
-    </el-form>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/yunpan';
+import { fetchSpiderPageList } from '@/api/yunpan';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import {
   moveYunpanItem,
   removeYunpanItem,
   deleteYunpanItem,
-  batchDeleteYunpanItems,
-  deleteMultipleYunpanItems,
-  removeMultipleYunpanItems,
   makeInvalid,
   makeValid,
-  replaceYunpanLinks,
 } from '@/api/yunpan';
 
 export default {
@@ -570,8 +450,8 @@ export default {
         limit: 20,
         source: 0,
         validStatus: 1,
-        editStatus: 0,
-        auther: '',
+        editStatus: '',
+        searchEngineCrawled: 0,
         dateRange: null,
         id: '',
         keyword: '',
@@ -582,6 +462,7 @@ export default {
       sourceOptions: [],
       editStatusOptions: [],
       validStatusOptions: [],
+      searchEngineOptions: [],
       approveOptions: [
         {
           value: -1,
@@ -635,7 +516,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      fetchList(this.listQuery).then((response) => {
+      fetchSpiderPageList(this.listQuery).then((response) => {
         console.log('records = ', response.data.data.records);
         this.list = response.data.data.records;
         this.total = Number(response.data.data.total);
@@ -820,154 +701,10 @@ export default {
       });
     },
 
-    replaceLinks() {
-      if (this.multipleSelection.length == 0) {
-        this.$message({
-          type: 'error',
-          message: `未选`,
-        });
-        return;
-      }
-      this.replaceLinksLoading = true;
-      const queryArray = this.multipleSelection.map((yunpan) => ({
-        id: yunpan.id,
-        validStatus: yunpan.validStatus,
-      }));
-      replaceYunpanLinks(this.myLinks, queryArray).then((response) => {
-        if (response.data.code == 0) {
-          this.$message({
-            type: 'success',
-            message: 'replaceYunpanLinks成功',
-          });
-        } else {
-          this.$message({
-            type: 'error',
-            message: 'replaceYunpanLinks失败：' + response.data.msg,
-          });
-        }
-        this.replaceLinksLoading = false;
-      });
-    },
-
-    multipleDelete() {
-      if (this.multipleSelection.length == 0) {
-        this.$message({
-          type: 'error',
-          message: `请至少选中一条`,
-        });
-        return;
-      } else {
-        this.$confirm('此操作会真实删除所选云盘记录，是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        })
-          .then(() => {
-            let idList = this.multipleSelection.map((item) => item.id);
-            console.log(idList);
-            deleteMultipleYunpanItems(idList).then((response) => {
-              if (response.data.code == 0) {
-                this.$message({
-                  type: 'success',
-                  message: '删除成功',
-                });
-                this.getList();
-              } else {
-                this.$message({
-                  type: 'error',
-                  message: '删除失败：' + response.data.msg,
-                });
-              }
-            });
-          })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除',
-            });
-          });
-      }
-    },
-
-    multipleRemove() {
-      if (this.multipleSelection.length == 0) {
-        this.$message({
-          type: 'error',
-          message: `请至少选中一条`,
-        });
-        return;
-      } else {
-        this.$confirm('此操作会去除所选云盘记录，是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        })
-          .then(() => {
-            let idList = this.multipleSelection.map((item) => item.id);
-            console.log(idList);
-            removeMultipleYunpanItems(idList).then((response) => {
-              if (response.data.code == 0) {
-                this.$message({
-                  type: 'success',
-                  message: '去除成功',
-                });
-                this.getList();
-              } else {
-                this.$message({
-                  type: 'error',
-                  message: '删除失败：' + response.data.msg,
-                });
-              }
-            });
-          })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消删除',
-            });
-          });
-      }
-    },
-
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
 
-    batchDelete() {
-      this.$refs.postForm.validate((valid) => {
-        if (valid) {
-          this.loading = true;
-          batchDeleteYunpanItems(this.postForm).then((response) => {
-            if (response.data.code == 0) {
-              this.$notify({
-                title: '成功',
-                message: '批量删除云盘成功',
-                type: 'success',
-                duration: 2000,
-              });
-              this.postForm.status = 'published';
-            } else {
-              this.$notify({
-                title: '失败',
-                type: 'error',
-                message: '发布失败：' + response.data.msg,
-              });
-            }
-            this.loading = false;
-          });
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
-    },
-    handleSuccess(response) {
-      console.log(response);
-      this.$message({
-        type: 'success',
-        message: `${response.data.name} 上传成功`,
-      });
-    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
@@ -1031,6 +768,33 @@ export default {
         {
           value: 1,
           label: '有效',
+        },
+      ];
+      this.searchEngineOptions = [
+        { value: 0, label: 'All' },
+        {
+          value: 1,
+          label: 'baidu',
+        },
+        {
+          value: 2,
+          label: 'sogou',
+        },
+        {
+          value: 3,
+          label: '神马',
+        },
+        {
+          value: 4,
+          label: 'google',
+        },
+        {
+          value: 5,
+          label: 'bing',
+        },
+        {
+          value: 6,
+          label: 'yandex',
         },
       ];
     },
