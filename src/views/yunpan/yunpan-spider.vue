@@ -5,7 +5,7 @@
         <div class="block">
           搜索引擎：
           <el-select
-            v-model="listQuery.searchEngineCrawled"
+            v-model="listQuery.searchEngine"
             clearable
             placeholder="请选择"
             style="max-width: 50%"
@@ -159,16 +159,23 @@
       style="width: 100%"
       stripe
       @selection-change="handleSelectionChange"
+      @sort-change="handleSortChange"
     >
       <el-table-column type="selection" width="40"> </el-table-column>
 
-      <el-table-column width="170" align="center" label="ID">
+      <el-table-column width="170" align="center" label="ID" sortable="custom" prop="id">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="140" align="center" label="最后更新时间">
+      <el-table-column align="center" label="🕷️" width="90" prop="searchEngine">
+        <template slot-scope="scope">
+          {{ scope.row.searchEngine | parseSearchEngine }}
+        </template>
+      </el-table-column>
+
+      <el-table-column width="140" align="center" label="最后更新时间" prop="lastUpdateDate">
         <template slot-scope="scope">
           <span>{{ scope.row.lastUpdateDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -249,7 +256,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="作品名" width="170">
+      <el-table-column align="center" label="作品名" width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.worksName }}</span>
         </template>
@@ -428,6 +435,17 @@ export default {
       };
       return statusMap[status];
     },
+    parseSearchEngine(spider) {
+      const spiderMap = {
+        1: 'baidu',
+        2: 'sogou',
+        3: '神马',
+        4: 'google',
+        5: 'bing',
+        6: 'yandex',
+      };
+      return spiderMap[spider];
+    },
   },
   data() {
     const validateRequire = (rule, value, callback) => {
@@ -451,13 +469,15 @@ export default {
         source: 0,
         validStatus: 1,
         editStatus: '',
-        searchEngineCrawled: 0,
+        searchEngine: 1,
         dateRange: null,
         id: '',
         keyword: '',
         workName: '',
         title: '',
         yunpanLink: '',
+        sort: '',
+        sortBy: '',
       },
       sourceOptions: [],
       editStatusOptions: [],
@@ -703,6 +723,19 @@ export default {
 
     handleSelectionChange(val) {
       this.multipleSelection = val;
+    },
+
+    handleSortChange(val) {
+      if (val != undefined && val != null) {
+        if (val.order == 'ascending') {
+          this.listQuery.sort = 'asc';
+        } else if (val.order == 'descending') {
+          this.listQuery.sort = 'desc';
+        }
+
+        this.listQuery.sortBy = val.prop;
+        this.getList();
+      }
     },
 
     handleRemove(file, fileList) {

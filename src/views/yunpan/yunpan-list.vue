@@ -567,7 +567,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 50,
         source: 0,
         validStatus: 1,
         editStatus: 0,
