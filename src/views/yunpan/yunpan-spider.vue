@@ -541,6 +541,7 @@ export default {
         this.list = response.data.data.records;
         this.total = Number(response.data.data.total);
         this.listLoading = false;
+        // this.listQuery.sort = '';
       });
     },
     /**
@@ -726,11 +727,14 @@ export default {
     },
 
     handleSortChange(val) {
+      console.log(val);
       if (val != undefined && val != null) {
         if (val.order == 'ascending') {
           this.listQuery.sort = 'asc';
         } else if (val.order == 'descending') {
           this.listQuery.sort = 'desc';
+        } else {
+          this.listQuery.sort = '';
         }
 
         this.listQuery.sortBy = val.prop;
