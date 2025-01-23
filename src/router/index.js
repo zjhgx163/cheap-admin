@@ -272,6 +272,15 @@ export const asyncRoutes = [
           roles: ['admin'], // or you can only set roles in sub nav
         },
       },
+      {
+        path: 'unedited',
+        component: () => import('@/views/yunpan/yunpan-unedited'),
+        name: 'YunpanUneditPage',
+        meta: {
+          title: 'YunpanUneditPage',
+          roles: ['admin'], // or you can only set roles in sub nav
+        },
+      },
     ],
   },
 

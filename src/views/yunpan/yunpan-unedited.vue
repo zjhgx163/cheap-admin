@@ -3,15 +3,33 @@
     <el-row :gutter="1" style="margin: 40px 15px 40px">
       <el-col :span="4" :xs="24">
         <div class="block">
-          搜索引擎：
+          来源网站：
           <el-select
-            v-model="listQuery.searchEngine"
+            v-model="listQuery.sourceSite"
             clearable
             placeholder="请选择"
             style="max-width: 50%"
           >
             <el-option
-              v-for="item in searchEngineOptions"
+              v-for="item in sourceSiteOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+      </el-col>
+      <el-col :span="3" :xs="24">
+        <div class="block">
+          状态：
+          <el-select
+            v-model="listQuery.status"
+            clearable
+            placeholder="请选择"
+            style="max-width: 60%"
+          >
+            <el-option
+              v-for="item in statusOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -35,74 +53,6 @@
 
       <el-col :span="4" :xs="24">
         <div class="block">
-          爬取/自有：
-          <el-select
-            v-model="listQuery.source"
-            clearable
-            placeholder="请选择"
-            style="max-width: 50%"
-          >
-            <el-option
-              v-for="item in sourceOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </div>
-      </el-col>
-
-      <el-col :span="4" :xs="24">
-        <div class="block">
-          编辑状态：
-          <el-select
-            v-model="listQuery.editStatus"
-            clearable
-            placeholder="请选择"
-            style="max-width: 60%"
-          >
-            <el-option
-              v-for="item in editStatusOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </div>
-      </el-col>
-
-      <el-col :span="4" :xs="24">
-        <div class="block">
-          有效状态：
-          <el-select v-model="listQuery.validStatus" placeholder="请选择" style="max-width: 40%">
-            <el-option
-              v-for="item in validStatusOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </div>
-      </el-col>
-    </el-row>
-
-    <el-row :gutter="1" style="margin: 40px 15px 40px">
-      <el-col :span="4" :xs="24">
-        <div class="block">
-          ID：
-          <el-input v-model="listQuery.id" placeholder="ID" style="max-width: 80%" />
-        </div>
-      </el-col>
-
-      <el-col :span="5" :xs="24">
-        <div class="block">
-          标题：
-          <el-input v-model="listQuery.title" placeholder="搜索关键字" style="max-width: 80%" />
-        </div>
-      </el-col>
-
-      <el-col :span="4" :xs="24">
-        <div class="block">
           Key：
           <el-input v-model="listQuery.keyword" placeholder="keyword" style="max-width: 70%" />
         </div>
@@ -110,8 +60,8 @@
 
       <el-col :span="4" :xs="24">
         <div class="block">
-          作品名:
-          <el-input v-model="listQuery.workName" placeholder="作品名" style="max-width: 70%" />
+          作者：
+          <el-input v-model="listQuery.auther" placeholder="作者" style="max-width: 70%" />
         </div>
       </el-col>
 
@@ -142,15 +92,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="🕷️" width="90" prop="searchEngine">
+      <el-table-column align="center" label="来源网站" width="90" prop="sourceSite">
         <template slot-scope="scope">
-          {{ scope.row.searchEngine | parseSearchEngine }}
+          {{ scope.row.source }}
         </template>
       </el-table-column>
 
-      <el-table-column width="140" align="center" label="最后更新时间" prop="lastUpdateDate">
+      <el-table-column align="center" label="状态" width="90">
         <template slot-scope="scope">
-          <span>{{ scope.row.lastUpdateDate | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <el-tag :type="scope.row.status | statusFilter" size="mini" effect="light">
+            {{ scope.row.status | parseStatus }}
+          </el-tag>
         </template>
       </el-table-column>
 
@@ -174,14 +126,6 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="有效状态" width="90">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.validStatus | validStatusFilter" size="mini" effect="dark">
-            {{ scope.row.validStatus | parseValidStatus }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
       <el-table-column class-name="status-col" label="编辑状态" width="190">
         <template slot-scope="{ row }">
           <el-row type="flex" justify="space-between" align="middle" :gutter="3">
@@ -197,7 +141,7 @@
                   query: {
                     type: 'yunpan',
                     isEdit: true,
-                    validStatus: row.validStatus,
+                    validStatus: 1,
                     editStatus: row.editStatus,
                   },
                 }"
@@ -218,7 +162,7 @@
                 @click="
                   $router.push({
                     path: '/yunpan/diff/' + row.id,
-                    query: { validStatus: row.validStatus, editStatus: row.editStatus },
+                    query: { validStatus: 1, editStatus: row.editStatus },
                   })
                 "
               >
@@ -306,45 +250,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="来源" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.source }}</span>
-        </template>
-      </el-table-column>
-
       <el-table-column align="center" label="标签" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.tag }}</span>
         </template>
       </el-table-column>
-      <!-- 
-      <el-table-column width="100px" label="Importance">
-        <template slot-scope="scope">
-          <svg-icon
-            v-for="n in +scope.row.importance"
-            :key="n"
-            icon-class="star"
-            class="meta-item__icon"
-          />
-        </template>
-      </el-table-column>
-      
-
-      <el-table-column min-width="300px" label="Title">
-        <template slot-scope="{ row }">
-          <router-link :to="'/example/edit/' + row.id" class="link-type">
-            <span>{{ row.title }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Actions" width="120">
-        <template slot-scope="scope">
-          <router-link :to="'/example/edit/' + scope.row.id">
-            <el-button type="primary" size="small" icon="el-icon-edit"> Edit </el-button>
-          </router-link>
-        </template>
-      </el-table-column> -->
     </el-table>
 
     <pagination
@@ -358,7 +268,7 @@
 </template>
 
 <script>
-import { fetchSpiderPageList } from '@/api/yunpan';
+import { fetchUneditPageList } from '@/api/yunpan';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import {
   moveYunpanItem,
@@ -372,6 +282,27 @@ export default {
   name: 'Yunpan',
   components: { Pagination },
   filters: {
+    //上面的parseTime也是filter
+    statusFilter(status) {
+      const statusMap = {
+        0: 'success',
+        1: 'info',
+        2: 'warning',
+        3: 'danger',
+        '-1': '',
+      };
+      return statusMap[status];
+    },
+    parseStatus(status) {
+      const statusMap = {
+        0: '正式展现',
+        1: '内容不足',
+        2: '没有链接',
+        3: 'title未修改',
+        '-1': '草稿',
+      };
+      return statusMap[status];
+    },
     //上面的parseTime也是filter
     editStatusFilter(status) {
       const statusMap = {
@@ -393,110 +324,49 @@ export default {
       };
       return statusMap[status];
     },
-    //上面的parseTime也是filter
-    validStatusFilter(status) {
-      const statusMap = {
-        1: 'success',
-        '-1': 'info',
-      };
-      return statusMap[status];
-    },
-    parseValidStatus(status) {
-      const statusMap = {
-        1: '有效',
-        '-1': '失效',
-      };
-      return statusMap[status];
-    },
-    parseSearchEngine(spider) {
-      const spiderMap = {
-        1: 'baidu',
-        2: 'sogou',
-        3: '神马',
-        4: 'google',
-        5: 'bing',
-        6: 'yandex',
-      };
-      return spiderMap[spider];
-    },
   },
   data() {
-    const validateRequire = (rule, value, callback) => {
-      if (value === '') {
-        this.$message({
-          message: rule.field + '为必传项',
-          type: 'error',
-        });
-        callback(new Error(rule.field + '为必传项'));
-      } else {
-        callback();
-      }
-    };
     return {
       list: null,
       total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
-        source: 0,
+        limit: 50,
         validStatus: 1,
-        editStatus: '',
-        searchEngine: 1,
+        status: -1,
+        sourceSite: 'pan666',
         dateRange: null,
-        id: '',
         keyword: '',
-        workName: '',
-        title: '',
-        yunpanLink: '',
-        sort: '',
-        sortBy: '',
+        auther: '',
       },
-      sourceOptions: [],
-      editStatusOptions: [],
-      validStatusOptions: [],
-      searchEngineOptions: [],
-      approveOptions: [
-        {
-          value: -1,
-          label: '拒绝',
-        },
-        {
-          value: 1,
-          label: '同意',
-        },
-      ],
-
+      statusOptions: [],
+      sourceSiteOptions: [],
       loading: false,
       multipleSelection: [],
     };
   },
   props: {
-    editStatus: {
+    status: {
       type: Number,
       default: null,
     },
     type: {
       type: String,
     },
-    validStatus: {
-      type: Number,
-    },
   },
   created() {
     this.setOptions(); // set default select options
-    if (this.editStatus != null && !isNaN(this.editStatus)) {
-      this.listQuery.editStatus = this.editStatus;
+    if (this.status != null && !isNaN(this.status)) {
+      this.listQuery.status = this.status;
     }
-    if (this.validStatus != null && !isNaN(this.validStatus)) {
-      this.listQuery.validStatus = this.validStatus;
-    }
+
     this.getList();
   },
   methods: {
     getList() {
       this.listLoading = true;
-      fetchSpiderPageList(this.listQuery).then((response) => {
+      fetchUneditPageList(this.listQuery).then((response) => {
         console.log('records = ', response.data.data.records);
         this.list = response.data.data.records;
         this.total = Number(response.data.data.total);
@@ -516,7 +386,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          moveYunpanItem(row.id, row.validStatus).then((response) => {
+          moveYunpanItem(row.id, 1).then((response) => {
             if (response.data.code == 0) {
               this.$message({
                 type: 'success',
@@ -549,7 +419,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          removeYunpanItem(row.id, row.validStatus).then((response) => {
+          removeYunpanItem(row.id, 1).then((response) => {
             if (response.data.code == 0) {
               this.$message({
                 type: 'success',
@@ -582,7 +452,7 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          deleteYunpanItem(row.id, row.validStatus).then((response) => {
+          deleteYunpanItem(row.id, 1).then((response) => {
             if (response.data.code == 0) {
               this.$message({
                 type: 'success',
@@ -683,80 +553,36 @@ export default {
     },
 
     setOptions() {
-      this.sourceOptions = [
+      this.statusOptions = [
         {
-          value: 0,
-          label: '全部',
+          value: -1,
+          label: '草稿',
         },
         {
           value: 1,
-          label: 'self',
+          label: '内容不足',
         },
 
         {
           value: 2,
-          label: 'crawled',
-        },
-      ];
-      this.editStatusOptions = [
-        {
-          value: 0,
-          label: '未编辑',
-        },
-        {
-          value: 1,
-          label: '标题由gpt编辑',
-        },
-
-        {
-          value: 2,
-          label: '内容由gpt编辑',
+          label: '没有链接',
         },
 
         {
           value: 3,
-          label: '人工编辑',
-        },
-        {
-          value: -1,
-          label: 'gpt编辑失败',
+          label: 'title未修改',
         },
       ];
-      this.validStatusOptions = [
-        {
-          value: -1,
-          label: '失效',
-        },
-        {
-          value: 1,
-          label: '有效',
-        },
-      ];
-      this.searchEngineOptions = [
+
+      this.sourceSiteOptions = [
         { value: 0, label: 'All' },
         {
-          value: 1,
-          label: 'baidu',
+          value: 'pan666',
+          label: 'pan666',
         },
         {
-          value: 2,
-          label: 'sogou',
-        },
-        {
-          value: 3,
-          label: '神马',
-        },
-        {
-          value: 4,
-          label: 'google',
-        },
-        {
-          value: 5,
-          label: 'bing',
-        },
-        {
-          value: 6,
-          label: 'yandex',
+          value: 'wpzys',
+          label: 'wpzys',
         },
       ];
     },

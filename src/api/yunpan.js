@@ -142,9 +142,27 @@ export function replaceYunpanLinks(myLinks, queryArray) {
   });
 }
 
+/**
+ * YunpnSpiderPage 页面list
+ * @param {*} id
+ * @returns
+ */
 export function fetchSpiderPageList(query) {
   return service2({
     url: '/admin/spiderPageList',
+    method: 'post',
+    data: query,
+  });
+}
+
+/**
+ * YunpnUneditPage 页面list
+ * @param {*} id
+ * @returns
+ */
+export function fetchUneditPageList(query) {
+  return service2({
+    url: '/admin/uneditPageList',
     method: 'post',
     data: query,
   });
