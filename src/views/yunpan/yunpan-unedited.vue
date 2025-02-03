@@ -173,9 +173,45 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="作品名" width="120">
+      <el-table-column width="160" align="center" label="链接" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span>{{ scope.row.worksName }}</span>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="
+              scope.row.yunpanLinks != null
+                ? scope.row.yunpanLinks.toString()
+                : scope.row.yunpanLinks
+            "
+            placement="top-start"
+          >
+            <a class="link-type"> {{ scope.row.yunpanLinks }}</a>
+            <!-- <span>{{ scope.row.yunpanLinks }}</span> -->
+          </el-tooltip>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="140" align="center" label="爬取时间" prop="lastUpdateDate">
+        <template slot-scope="scope">
+          <span>{{ scope.row.createdTime | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="头像" width="75">
+        <template slot-scope="scope">
+          <el-avatar :src="scope.row.avatar"></el-avatar>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="楼主" width="90">
+        <template slot-scope="scope">
+          <span>{{ scope.row.auther }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="标签" width="60">
+        <template slot-scope="scope">
+          <span>{{ scope.row.tag }}</span>
         </template>
       </el-table-column>
 
@@ -235,24 +271,6 @@
               />
             </el-col>
           </el-row>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="头像" width="75">
-        <template slot-scope="scope">
-          <el-avatar :src="scope.row.avatar"></el-avatar>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="楼主" width="90">
-        <template slot-scope="scope">
-          <span>{{ scope.row.auther }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="标签" width="60">
-        <template slot-scope="scope">
-          <span>{{ scope.row.tag }}</span>
         </template>
       </el-table-column>
     </el-table>

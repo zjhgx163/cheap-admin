@@ -50,6 +50,8 @@
           <!-- <Warning /> -->
 
           <el-col :span="24">
+            <input v-model="postForm.title" readonly disabled :maxlength="100" size="150" />
+
             <el-form-item style="margin-bottom: 40px" prop="titleGpt">
               <MDinput v-model="postForm.titleGpt" :maxlength="100" name="name" required>
                 Title
