@@ -101,12 +101,7 @@
                     class="postInfo-container-item"
                     prop="tag"
                   >
-                    <el-select
-                      v-model="postForm.tag"
-                      default-first-option
-                      placeholder="标签"
-                      :disabled="isEdit"
-                    >
+                    <el-select v-model="postForm.tag" default-first-option placeholder="标签">
                       <el-option
                         v-for="item in tagOptions"
                         :key="item.value"
@@ -114,6 +109,17 @@
                         :value="item.value"
                       />
                     </el-select>
+                  </el-form-item>
+                </el-col>
+
+                <el-col :span="3">
+                  <el-form-item
+                    label-width="90px"
+                    class="postInfo-container-item"
+                    prop="isOverride"
+                  >
+                    <!-- `checked` 为 true 或 false -->
+                    <el-checkbox v-model="postForm.isOverride">是否覆盖</el-checkbox>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -176,6 +182,7 @@ const defaultForm = {
   isBest: 0,
   isCollection: 0,
   validStatus: 0,
+  isOverride: false,
   // importance: 0,
 };
 
