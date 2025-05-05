@@ -416,6 +416,7 @@ export default {
         4: 'google',
         5: 'bing',
         6: 'yandex',
+        7: '360',
       };
       return spiderMap[spider];
     },
@@ -757,6 +758,10 @@ export default {
         {
           value: 6,
           label: 'yandex',
+        },
+        {
+          value: 7,
+          label: '360',
         },
       ];
     },
