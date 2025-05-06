@@ -281,6 +281,15 @@ export const asyncRoutes = [
           roles: ['admin'], // or you can only set roles in sub nav
         },
       },
+      {
+        path: 'unsubmit-sogou',
+        component: () => import('@/views/yunpan/yunpan-unsubmit-sogou'),
+        name: 'YunpanUnsubmitSogou',
+        meta: {
+          title: 'YunpanUnsubmitSogou',
+          roles: ['admin'], // or you can only set roles in sub nav
+        },
+      },
     ],
   },
 

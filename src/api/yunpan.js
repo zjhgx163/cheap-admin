@@ -168,6 +168,33 @@ export function fetchUneditPageList(query) {
   });
 }
 
+/**
+ * YunpnUnsubmitSogou 页面list
+ * @param {*} id
+ * @returns
+ */
+export function fetchUnsubmitSogouList(query) {
+  return service2({
+    url: '/admin/unsubmitSogouList',
+    method: 'post',
+    data: query,
+  });
+}
+
+/**
+ * YunpnUnsubmitSogou 提交索引
+ * @param {*} id
+ * @returns
+ */
+export function submitIndex(list) {
+  return service2({
+    url: '/admin/submitIndex',
+    method: 'post',
+    params: { idList: list },
+    paramsSerializer: (params) => parseParams(params),
+  });
+}
+
 function parseParams(params) {
   let options = '';
 
