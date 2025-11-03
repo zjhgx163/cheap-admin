@@ -418,8 +418,8 @@ export default {
     },
     parseRecentVisitFlag(status) {
       const flagMap = {
-        1: '有效',
-        0: '失效',
+        1: '是',
+        0: '无',
       };
       return flagMap[status];
     },
