@@ -174,6 +174,14 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="最近来访" width="90">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.recentVisitFlag | recentVisitFilter" size="mini" effect="dark">
+            {{ scope.row.recentVisitFlag | parseRecentVisitFlag }}
+          </el-tag>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="有效状态" width="90">
         <template slot-scope="scope">
           <el-tag :type="scope.row.validStatus | validStatusFilter" size="mini" effect="dark">
@@ -400,6 +408,20 @@ export default {
         '-1': 'info',
       };
       return statusMap[status];
+    },
+    recentVisitFilter(status) {
+      const statusMap = {
+        1: 'success',
+        0: 'info',
+      };
+      return statusMap[status];
+    },
+    parseRecentVisitFlag(status) {
+      const flagMap = {
+        1: '有效',
+        0: '失效',
+      };
+      return flagMap[status];
     },
     parseValidStatus(status) {
       const statusMap = {
