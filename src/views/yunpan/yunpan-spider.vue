@@ -115,6 +115,20 @@
         </div>
       </el-col>
 
+      <el-col :span="4" :xs="24">
+        <div class="block">
+          最近来访：
+          <el-select v-model="listQuery.recVisitFlag" placeholder="请选择" style="max-width: 40%">
+            <el-option
+              v-for="item in recentVisitFlagOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
+      </el-col>
+
       <el-col :span="1" :xs="24">
         <div class="block">
           <el-button type="primary" @click.prevent.stop="getList"> 查询 </el-button>
@@ -474,11 +488,22 @@ export default {
         yunpanLink: '',
         sort: '',
         sortBy: '',
+        recVisitFlag: '',
       },
       sourceOptions: [],
       editStatusOptions: [],
       validStatusOptions: [],
       searchEngineOptions: [],
+      recentVisitFlagOptions: [
+        {
+          value: 0,
+          label: '无',
+        },
+        {
+          value: 1,
+          label: '有',
+        },
+      ],
       approveOptions: [
         {
           value: -1,
