@@ -156,6 +156,18 @@ export function fetchSpiderPageList(query) {
 }
 
 /**
+ * YonpanGoaccessPage 页面list
+ * @param {*} query
+ * @returns
+ */
+export function fetchGoaccessPageList(query) {
+  return service2({
+    url: '/admin/goaccessPageList',
+    method: 'post',
+    data: query,
+  });
+}
+/**
  * YunpnUneditPage 页面list
  * @param {*} id
  * @returns

@@ -260,6 +260,19 @@ export const asyncRoutes = [
         },
       },
       {
+        path: 'goaccess',
+        component: () => import('@/views/yunpan/yunpan-goaccess'),
+        name: 'YunpanGoaccessPage',
+        props: (route) => ({
+          validStatus: Number(route.query.validStatus),
+          editStatus: Number(route.query.editStatus),
+        }),
+        meta: {
+          title: 'YunpanGoaccessPage',
+          roles: ['admin'], // or you can only set roles in sub nav
+        },
+      },
+      {
         path: 'spider',
         component: () => import('@/views/yunpan/yunpan-spider'),
         name: 'YunpanSpiderPage',
