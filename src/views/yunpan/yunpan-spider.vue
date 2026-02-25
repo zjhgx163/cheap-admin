@@ -218,9 +218,11 @@
                   path: '/manage/article/' + row.id,
                   query: {
                     type: 'yunpan',
+                    page: 'spider',
                     isEdit: true,
                     validStatus: row.validStatus,
                     editStatus: row.editStatus,
+                    spider: listQuery.searchEngine,
                   },
                 }"
               >
@@ -313,6 +315,24 @@
               />
             </el-col>
           </el-row>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="160" align="center" label="链接" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="
+              scope.row.yunpanLinks != null
+                ? scope.row.yunpanLinks.toString()
+                : scope.row.yunpanLinks
+            "
+            placement="top-start"
+          >
+            <a class="link-type"> {{ scope.row.yunpanLinks }}</a>
+            <!-- <span>{{ scope.row.yunpanLinks }}</span> -->
+          </el-tooltip>
         </template>
       </el-table-column>
 
@@ -530,6 +550,9 @@ export default {
     validStatus: {
       type: Number,
     },
+    spider: {
+      type: Number,
+    },
   },
   created() {
     this.setOptions(); // set default select options
@@ -539,6 +562,10 @@ export default {
     if (this.validStatus != null && !isNaN(this.validStatus)) {
       this.listQuery.validStatus = this.validStatus;
     }
+    if (this.spider != null && !isNaN(this.spider)) {
+      this.listQuery.searchEngine = this.spider;
+    }
+
     this.getList();
   },
   methods: {

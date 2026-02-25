@@ -197,6 +197,8 @@ export const asyncRoutes = [
           isEdit: String(route.query.isEdit).toLowerCase() === 'true',
           validStatus: Number(route.query.validStatus),
           editStatus: Number(route.query.editStatus),
+          page: String(route.query.page),
+          spider: Number(route.query.spider),
         }),
         meta: {
           title: 'article',
@@ -279,6 +281,7 @@ export const asyncRoutes = [
         props: (route) => ({
           validStatus: Number(route.query.validStatus),
           editStatus: Number(route.query.editStatus),
+          spider: Number(route.query.spider),
         }),
         meta: {
           title: 'YunpanSpiderPage',

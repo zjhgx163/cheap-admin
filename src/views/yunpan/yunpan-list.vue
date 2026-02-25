@@ -237,6 +237,7 @@
                   path: '/manage/article/' + row.id,
                   query: {
                     type: 'yunpan',
+                    page: 'list',
                     isEdit: true,
                     validStatus: row.validStatus,
                     editStatus: row.editStatus,

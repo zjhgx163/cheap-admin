@@ -166,6 +166,7 @@
                   path: '/manage/article/' + row.id,
                   query: {
                     type: 'yunpan',
+                    page: 'goaccess',
                     isEdit: true,
                     validStatus: row.validStatus,
                     editStatus: row.editStatus,

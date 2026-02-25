@@ -140,6 +140,7 @@
                   path: '/manage/article/' + row.id,
                   query: {
                     type: 'yunpan',
+                    page: 'unedited',
                     isEdit: true,
                     validStatus: 1,
                     editStatus: row.editStatus,

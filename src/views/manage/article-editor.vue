@@ -205,10 +205,16 @@ export default {
     type: {
       type: String,
     },
+    page: {
+      type: String,
+    },
     validStatus: {
       type: Number,
     },
     editStatus: {
+      type: Number,
+    },
+    spider: {
       type: Number,
     },
   },
@@ -355,7 +361,6 @@ export default {
     },
     submitForm() {
       console.log(this.postForm);
-
       this.$refs.postForm.validate((valid) => {
         if (valid) {
           this.loading = true;
@@ -369,10 +374,38 @@ export default {
               });
               this.postForm.status = 'published';
               setTimeout(() => {
-                this.$router.push({
-                  path: '/yunpan',
-                  query: { validStatus: this.validStatus, editStatus: this.editStatus },
-                });
+                if (this.page == 'list') {
+                  this.$router.push({
+                    path: '/yunpan',
+                    query: { validStatus: this.validStatus, editStatus: this.editStatus },
+                  });
+                } else if (this.page == 'spider') {
+                  this.$router.push({
+                    path: '/yunpan/spider',
+                    query: {
+                      validStatus: this.validStatus,
+                      editStatus: this.editStatus,
+                      spider: this.spider,
+                    },
+                  });
+                } else if (this.page == 'goaccess') {
+                  this.$router.push({
+                    path: '/yunpan/goaccess',
+                    query: {
+                      validStatus: this.validStatus,
+                      editStatus: this.editStatus,
+                    },
+                  });
+                } else if (this.page == 'unedited') {
+                  this.$router.push({
+                    path: '/yunpan/unedited',
+                  });
+                } else {
+                  this.$router.push({
+                    path: '/yunpan',
+                    query: { validStatus: this.validStatus, editStatus: this.editStatus },
+                  });
+                }
               }, 500);
             } else {
               this.$notify({
