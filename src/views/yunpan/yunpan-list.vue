@@ -694,6 +694,7 @@ export default {
                 type: 'success',
                 message: '移除成功 - ' + response.data.data,
               });
+              this.getList();
             } else {
               this.$message({
                 type: 'error',
@@ -727,6 +728,7 @@ export default {
                 type: 'success',
                 message: '删除成功 - ' + response.data.data,
               });
+              this.getList();
             } else {
               this.$message({
                 type: 'error',

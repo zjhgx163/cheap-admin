@@ -136,6 +136,52 @@
       </el-col>
     </el-row>
 
+    <el-row :gutter="1" style="margin: 40px 15px 40px" align="top" type="flex">
+      <el-col :span="5" :xs="24">
+        <div>
+          <el-input
+            label="替换"
+            type="textarea"
+            v-model="myLinks"
+            placeholder="替换链接"
+            style="width: 300px; max-width: 100%"
+          />
+        </div>
+      </el-col>
+
+      <el-col :span="2" :xs="24">
+        <div class="block">
+          <el-button
+            type="primary"
+            @click.prevent.stop="replaceLinks"
+            size="small"
+            v-loading="replaceLinksLoading"
+          >
+            链接替换
+          </el-button>
+        </div>
+      </el-col>
+
+      <el-col :span="1" :offset="1" :xs="24">
+        <el-button
+          type="danger"
+          circle
+          size="mini"
+          icon="el-icon-delete-solid"
+          @click="multipleDelete"
+        />
+      </el-col>
+      <el-col :span="1" :xs="24">
+        <el-button
+          type="warning"
+          circle
+          size="mini"
+          icon="el-icon-delete"
+          @click="multipleRemove"
+        />
+      </el-col>
+    </el-row>
+
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -293,28 +339,9 @@
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="使有效/失效" width="100">
-        <template slot-scope="{ row }">
-          <el-row type="flex" justify="space-around" align="middle">
-            <el-col :span="8">
-              <el-button
-                type="info"
-                circle
-                size="mini"
-                icon="el-icon-document-remove"
-                @click="makeInvalid(row)"
-              />
-            </el-col>
-            <el-col :span="8">
-              <el-button
-                type="success"
-                circle
-                size="mini"
-                icon="el-icon-document-add"
-                @click="makeValid(row)"
-              />
-            </el-col>
-          </el-row>
+      <el-table-column align="center" label="长度" width="60" sortable="custom" prop="text_length">
+        <template slot-scope="scope">
+          <span>{{ scope.row.textLength }}</span>
         </template>
       </el-table-column>
 
@@ -406,8 +433,9 @@ import {
   moveYunpanItem,
   removeYunpanItem,
   deleteYunpanItem,
-  makeInvalid,
-  makeValid,
+  deleteMultipleYunpanItems,
+  removeMultipleYunpanItems,
+  replaceYunpanLinks,
 } from '@/api/yunpan';
 
 export default {
@@ -537,6 +565,7 @@ export default {
 
       loading: false,
       multipleSelection: [],
+      replaceLinksLoading: false,
     };
   },
   props: {
@@ -630,6 +659,7 @@ export default {
                 type: 'success',
                 message: '移除成功 - ' + response.data.data,
               });
+              this.getList();
             } else {
               this.$message({
                 type: 'error',
@@ -663,6 +693,7 @@ export default {
                 type: 'success',
                 message: '删除成功 - ' + response.data.data,
               });
+              this.getList();
             } else {
               this.$message({
                 type: 'error',
@@ -679,62 +710,171 @@ export default {
         });
     },
 
-    makeInvalid(row) {
-      this.$confirm('此操作会使此资源处于失效:' + row.title + ', 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      })
-        .then(() => {
-          makeInvalid(row.id).then((response) => {
-            if (response.data.code == 0) {
-              this.$message({
-                type: 'success',
-                message: '设置成invalid成功 - ' + response.data.data,
-              });
-            } else {
-              this.$message({
-                type: 'error',
-                message: '设置成invalid失败：' + response.data.msg,
-              });
-            }
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除',
-          });
+    // makeInvalid(row) {
+    //   this.$confirm('此操作会使此资源处于失效:' + row.title + ', 是否继续?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning',
+    //   })
+    //     .then(() => {
+    //       makeInvalid(row.id).then((response) => {
+    //         if (response.data.code == 0) {
+    //           this.$message({
+    //             type: 'success',
+    //             message: '设置成invalid成功 - ' + response.data.data,
+    //           });
+    //         } else {
+    //           this.$message({
+    //             type: 'error',
+    //             message: '设置成invalid失败：' + response.data.msg,
+    //           });
+    //         }
+    //       });
+    //     })
+    //     .catch(() => {
+    //       this.$message({
+    //         type: 'info',
+    //         message: '已取消删除',
+    //       });
+    //     });
+    // },
+
+    // makeValid(row) {
+    //   this.$confirm('此操作会使此资源处于有效:' + row.title + ', 是否继续?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning',
+    //   })
+    //     .then(() => {
+    //       makeValid(row.id).then((response) => {
+    //         if (response.data.code == 0) {
+    //           this.$message({
+    //             type: 'success',
+    //             message: '设置成Valid成功 - ' + response.data.data,
+    //           });
+    //         } else {
+    //           this.$message({
+    //             type: 'error',
+    //             message: '设置成Valid失败：' + response.data.msg,
+    //           });
+    //         }
+    //       });
+    //     })
+    //     .catch(() => {
+    //       this.$message({
+    //         type: 'info',
+    //         message: '已取消删除',
+    //       });
+    //     });
+    // },
+
+    replaceLinks() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'error',
+          message: `未选`,
         });
+        return;
+      }
+      this.replaceLinksLoading = true;
+      const queryArray = this.multipleSelection.map((yunpan) => ({
+        id: yunpan.id,
+        validStatus: yunpan.validStatus,
+      }));
+      replaceYunpanLinks(this.myLinks, queryArray).then((response) => {
+        if (response.data.code == 0) {
+          this.$message({
+            type: 'success',
+            message: 'replaceYunpanLinks成功',
+          });
+        } else {
+          this.$message({
+            type: 'error',
+            message: 'replaceYunpanLinks失败：' + response.data.msg,
+          });
+        }
+        this.replaceLinksLoading = false;
+      });
     },
 
-    makeValid(row) {
-      this.$confirm('此操作会使此资源处于有效:' + row.title + ', 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      })
-        .then(() => {
-          makeValid(row.id).then((response) => {
-            if (response.data.code == 0) {
-              this.$message({
-                type: 'success',
-                message: '设置成Valid成功 - ' + response.data.data,
-              });
-            } else {
-              this.$message({
-                type: 'error',
-                message: '设置成Valid失败：' + response.data.msg,
-              });
-            }
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除',
-          });
+    multipleDelete() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'error',
+          message: `请至少选中一条`,
         });
+        return;
+      } else {
+        this.$confirm('此操作会真实删除所选云盘记录，是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            let idList = this.multipleSelection.map((item) => item.id);
+            console.log(idList);
+            deleteMultipleYunpanItems(idList).then((response) => {
+              if (response.data.code == 0) {
+                this.$message({
+                  type: 'success',
+                  message: '删除成功',
+                });
+                this.getList();
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: '删除失败：' + response.data.msg,
+                });
+              }
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            });
+          });
+      }
+    },
+
+    multipleRemove() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'error',
+          message: `请至少选中一条`,
+        });
+        return;
+      } else {
+        this.$confirm('此操作会去除所选云盘记录，是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+          .then(() => {
+            let idList = this.multipleSelection.map((item) => item.id);
+            console.log(idList);
+            removeMultipleYunpanItems(idList).then((response) => {
+              if (response.data.code == 0) {
+                this.$message({
+                  type: 'success',
+                  message: '去除成功',
+                });
+                this.getList();
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: '删除失败：' + response.data.msg,
+                });
+              }
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除',
+            });
+          });
+      }
     },
 
     handleSelectionChange(val) {
