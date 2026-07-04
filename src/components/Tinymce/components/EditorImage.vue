@@ -18,25 +18,13 @@
         :on-success="handleSuccess"
         :before-upload="beforeUpload"
         class="editor-slide-upload"
-        action="https://httpbin.org/post"
+        action="http://web.hjdang.com/admin/image/upload"
         list-type="picture-card"
       >
-        <el-button
-          size="small"
-          type="primary"
-        >
-          Click upload
-        </el-button>
+        <el-button size="small" type="primary"> Click upload </el-button>
       </el-upload>
-      <el-button @click="dialogVisible = false">
-        Cancel
-      </el-button>
-      <el-button
-        type="primary"
-        @click="handleSubmit"
-      >
-        Confirm
-      </el-button>
+      <el-button @click="dialogVisible = false"> Cancel </el-button>
+      <el-button type="primary" @click="handleSubmit"> Confirm </el-button>
     </el-dialog>
   </div>
 </template>
@@ -67,7 +55,7 @@ export default {
       const arr = Object.keys(this.listObj).map((v) => this.listObj[v]);
       if (!this.checkAllSuccess()) {
         this.$message(
-          'Please wait for all images to be uploaded successfully. If there is a network problem, please refresh the page and upload again!',
+          'Please wait for all images to be uploaded successfully. If there is a network problem, please refresh the page and upload again!'
         );
         return;
       }
@@ -77,6 +65,8 @@ export default {
       this.dialogVisible = false;
     },
     handleSuccess(response, file) {
+      console.log(file);
+      console.log(response);
       const uid = file.uid;
       const objKeyArr = Object.keys(this.listObj);
       for (let i = 0, len = objKeyArr.length; i < len; i++) {
@@ -105,6 +95,8 @@ export default {
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.src = _URL.createObjectURL(file);
+        console.log('bbbbbbbbb');
+        console.log(img.src);
         img.onload = function () {
           _self.listObj[fileName] = {
             hasSuccess: false,
